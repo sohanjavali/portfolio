@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sohan Javali</title>
-  <meta name="description" content="CS at the University of Waterloo. I build LLM pipelines that turn messy documents into structured data, and I build them by running AI agents in parallel.">
+  <meta name="description" content="CS at the University of Waterloo. I build software that turns messy real-world data, like scanned filings and satellite images, into something structured and usable.">
   <meta name="color-scheme" content="dark light">
 
   <!-- Link previews (LinkedIn, iMessage, Slack) read these tags -->
   <meta property="og:title" content="Sohan Javali">
-  <meta property="og:description" content="CS at Waterloo. I build LLM pipelines, and I build them by running AI agents in parallel.">
+  <meta property="og:description" content="CS at Waterloo. I build software that turns messy real-world data into something structured and usable.">
   <meta property="og:type" content="website">
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0b0c'/%3E%3Ctext x='16' y='21' font-family='Menlo,monospace' font-size='13' font-weight='700' fill='%23ff6a2b' text-anchor='middle'%3ESJ%3C/text%3E%3C/svg%3E">
@@ -31,8 +31,8 @@
     <a class="mark" href="#top" aria-label="Back to top">SJ<span>_</span></a>
     <nav aria-label="Sections">
       <a href="#work">Work</a>
+      <a href="#projects">Projects</a>
       <a href="#experience">Experience</a>
-      <a href="#how">How I work</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -46,13 +46,13 @@
       <canvas class="grid" aria-hidden="true"></canvas>
 
       <div class="hero-inner wrap">
-        <p class="kicker mono">Waterloo CS <i>/</i> LLM pipelines <i>/</i> Agentic workflows</p>
+        <p class="kicker mono">Waterloo CS <i>/</i> Data pipelines <i>/</i> Full-stack apps</p>
         <h1><span>Sohan</span> <span>Javali</span></h1>
         <div class="hero-foot">
-          <p class="lede">I build LLM pipelines that turn messy documents into structured data, and I build them by running AI agents in parallel.</p>
+          <p class="lede">I build software that turns messy real-world data, like scanned filings and satellite images, into something structured and usable.</p>
           <div class="cta">
             <a class="btn" href="#work">See the work <span aria-hidden="true">↓</span></a>
-            <a class="btn ghost" href="mailto:sohanjavali@gmail.com">Email me</a>
+            <a class="btn ghost" href="mailto:sohanjavali@gmail.com" data-email>Email me</a>
           </div>
         </div>
         <p class="spawn-hint mono" aria-hidden="true">click the grid to spawn an agent</p>
@@ -129,7 +129,7 @@
         <summary>
           <span class="idx mono">02</span>
           <span class="head">
-            <span class="tag mono">Personal project <i>/</i> Full stack</span>
+            <span class="tag mono">Project <i>/</i> Full stack</span>
             <span class="name">AutoPod</span>
             <span class="one">Type a topic, get back a finished podcast episode. Claude researches and writes it, Cartesia voices it.</span>
           </span>
@@ -177,10 +177,49 @@
       </details>
     </section>
 
-    <!-- ============ 02 EXPERIENCE ============ -->
+    <!-- ============ 02 PROJECTS ============ -->
+    <section id="projects" class="block wrap">
+      <div class="block-head">
+        <p class="label mono" data-scramble>02 / Projects</p>
+        <p class="caption">Other things I've built, from research tools to a product I'm selling.</p>
+      </div>
+      <div class="projects">
+        <article class="proj reveal">
+          <p class="proj-cmd mono" aria-hidden="true"><span>$</span> run occupancy</p>
+          <p class="tag mono">Research <i>/</i> Computer vision <i>/</i> 2026</p>
+          <h3>Satellite parking occupancy</h3>
+          <p>Estimates how full shopping-mall parking lots are from satellite imagery, as a signal of economic activity. It samples the same weekday every month, since parking depends far more on the day of the week than the date, then pulls the nearest clear satellite frame. A vision model reads the occupancy into a strict schema that Pydantic validates, and pandas pivots every read into a mall-by-date matrix.</p>
+          <p>Every image and every read is cached, so a rerun never pays for the same frame twice. Going from a few malls to hundreds is a data change, not a code change.</p>
+          <ol class="chips mono" aria-label="Pipeline"><li>mall list</li><li>weekday sampling</li><li>satellite frame</li><li>vision model</li><li>Pydantic check</li><li class="end">mall × date matrix</li></ol>
+          <p class="tags mono">Python · Pydantic · pandas · Perplexity vision · OpenStreetMap</p>
+        </article>
+
+        <article class="proj reveal">
+          <p class="proj-cmd mono" aria-hidden="true"><span>$</span> run outbound</p>
+          <p class="tag mono">Product <i>/</i> Claude Code <i>/</i> 2026</p>
+          <h3>Outbound sales kit</h3>
+          <p>A Claude Code kit that runs cold outreach end to end. It finds leads, scores them, drafts each email in the sender's own voice, and holds every draft until a person approves it. Approved emails go out on a fixed follow-up schedule with daily send caps, and replies get triaged into a weekly report.</p>
+          <p>It's built as separate skills for onboarding, the daily batch, approvals, follow-ups, reply triage, and reporting, backed by Python scripts and a test suite. It's now being packaged and sold as a product with a done-for-you setup.</p>
+          <ol class="chips mono" aria-label="Pipeline"><li>find leads</li><li>score</li><li>draft in your voice</li><li>human approves</li><li>send with caps</li><li class="end">triage replies</li></ol>
+          <p class="tags mono">Claude Code skills · Python · Apollo · Gmail</p>
+        </article>
+
+        <article class="proj reveal">
+          <p class="proj-cmd mono" aria-hidden="true"><span>$</span> run vault</p>
+          <p class="tag mono">Personal system <i>/</i> Tooling <i>/</i> 2026</p>
+          <h3>A second brain that maintains itself</h3>
+          <p>My notes, decisions, and projects live in a plain-text Obsidian vault that Claude Code can read and maintain. I wrote custom skills to capture new notes, route them to the right place, and trace how my thinking changes over time.</p>
+          <p>Hooks lint every edit as it happens and log every commit to a changelog, and each commit is pushed to a private GitHub backup automatically. A weekly cloud job audits the whole thing for broken links and stale notes, even when my laptop is off.</p>
+          <ol class="chips mono" aria-label="Pipeline"><li>capture</li><li>inbox</li><li>route</li><li>lint on write</li><li>commit + changelog</li><li class="end">weekly audit</li></ol>
+          <p class="tags mono">Claude Code · Obsidian · Markdown · Bash hooks · Git</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ 03 EXPERIENCE ============ -->
     <section id="experience" class="block wrap">
       <div class="block-head">
-        <p class="label mono" data-scramble>02 / Experience</p>
+        <p class="label mono" data-scramble>03 / Experience</p>
         <p class="caption">Where I've done the work.</p>
       </div>
       <ul class="jobs">
@@ -207,31 +246,6 @@
       </ul>
     </section>
 
-    <!-- ============ 03 HOW I WORK ============ -->
-    <section id="how" class="block wrap">
-      <div class="block-head">
-        <p class="label mono" data-scramble>03 / How I work with agents</p>
-        <p class="caption">The part of my co-op I'd most like to keep doing.</p>
-      </div>
-      <div class="cards">
-        <article class="card reveal">
-          <p class="card-n mono">01</p>
-          <h3>Split the work</h3>
-          <p>Each agent gets one piece of the system with a clear boundary, like retrieval, OCR, or extraction. Small, separate tasks are easier to check and can run at the same time.</p>
-        </article>
-        <article class="card reveal">
-          <p class="card-n mono">02</p>
-          <h3>Set the guardrails first</h3>
-          <p>Before anything runs: read-only access to production data, outputs that can only be added to, and every claim tied to a source an agent can cite. The rules make the speed safe.</p>
-        </article>
-        <article class="card reveal">
-          <p class="card-n mono">03</p>
-          <h3>Review and decide</h3>
-          <p>Agents propose, I decide. I read what comes back, send it back when it's wrong, and choose what ships.</p>
-        </article>
-      </div>
-    </section>
-
     <!-- ============ 04 TOOLKIT ============ -->
     <section id="toolkit" class="block wrap">
       <div class="block-head">
@@ -253,9 +267,9 @@
         <p class="caption">The short version.</p>
       </div>
       <div class="about reveal">
-        <p class="about-big">I'm a CS student at Waterloo, from Holliston, Massachusetts. Most of what I build has a language model in the middle, and the part I care about is making it reliable.</p>
+        <p class="about-big">I'm a CS student at Waterloo, from Holliston, Massachusetts. I like taking something messy and making it reliable.</p>
         <div class="about-side">
-          <p>That means structured outputs instead of free text, checks that run after the model answers, and records that cite where every value came from. Before Waterloo I was a teaching assistant for AP Computer Science at my high school. I'm also an Eagle Scout and a DECA international qualifier.</p>
+          <p>That shows up in everything I build: regulatory filings turned into records that cite their sources, satellite images turned into a time series, my own notes turned into a system that keeps itself in order. Before Waterloo I was a teaching assistant for AP Computer Science at my high school. I'm also an Eagle Scout and a DECA international qualifier.</p>
           <dl class="facts mono">
             <div><dt>studying</dt><dd>Computer Science, University of Waterloo</dd></div>
             <div><dt>based</dt><dd>Waterloo, ON and Boston, MA</dd></div>
@@ -274,8 +288,9 @@
       </div>
       <h2 class="contact-big">Hiring for<br><em>Spring 2027?</em></h2>
       <div class="contact-row">
-        <a class="btn big" href="mailto:sohanjavali@gmail.com">sohanjavali@gmail.com</a>
+        <a class="btn big" href="mailto:sohanjavali@gmail.com" data-email>sohanjavali@gmail.com <span class="copy-ico mono" aria-hidden="true">copy</span></a>
         <div class="contact-links mono">
+          <a class="arrow-link" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=sohanjavali@gmail.com">Open in Gmail</a>
           <a class="arrow-link" href="https://www.linkedin.com/in/sohan-javali">LinkedIn</a>
           <a class="arrow-link" href="https://github.com/sohanjavali">GitHub</a>
         </div>

@@ -12,7 +12,15 @@ const canvas = document.querySelector('.grid');
 if (canvas) {
   const ctx = canvas.getContext('2d');
   const GAP = 32;                       // px between grid dots
-  const TASKS = ['retrieval', 'ocr', 'extract', 'guards', 'research', 'script', 'voice', 'tests', 'review', 'merge'];
+  // Little "task finished" labels, pulled from things I've actually built
+  const TASKS = [
+    'parse docket', 'fetch filings', 'ocr scan', 'extract fields', 'cite source', 'check owner', 'retrain bert',
+    'research topic', 'write script', 'voice line', 'stitch mp3', 'save episode',
+    'sample weekday', 'order frame', 'read lot', 'validate schema', 'pivot matrix',
+    'find leads', 'score lead', 'draft email', 'approve draft', 'send batch', 'triage reply',
+    'capture note', 'route inbox', 'lint note', 'commit', 'push backup', 'weekly audit',
+    'run tests', 'review diff', 'merge', 'deploy',
+  ];
   let w = 0, h = 0, cols = 0, rows = 0, dots = null, colors = {};
   let agents = [], ripples = [], last = 0, running = false, visible = true;
 
@@ -130,6 +138,32 @@ if (canvas) {
     if (!running) draw();
   });
 }
+
+/* ------------------------------------------------------------------
+   Email buttons: copy the address and show a toast with a Gmail link.
+   (A bare mailto: link does nothing if no mail app is set up, which is
+   why the old button seemed broken. Without JS it still falls back to mailto.)
+   ------------------------------------------------------------------ */
+const EMAIL = 'sohanjavali@gmail.com';
+const GMAIL = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + EMAIL;
+let toastTimer;
+function toast(html) {
+  let t = document.querySelector('.toast');
+  if (!t) { t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); document.body.append(t); }
+  t.innerHTML = html;
+  requestAnimationFrame(() => t.classList.add('show'));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 5000);
+}
+document.querySelectorAll('[data-email]').forEach((a) => a.addEventListener('click', async (e) => {
+  e.preventDefault();
+  try {
+    await navigator.clipboard.writeText(EMAIL);
+    toast(`Copied ${EMAIL} <a href="${GMAIL}" target="_blank" rel="noopener">Open Gmail ↗</a>`);
+  } catch {
+    window.location.href = 'mailto:' + EMAIL;   // clipboard blocked: fall back to the mail app
+  }
+}));
 
 /* ------------------------------------------------------------------
    2. Section labels "decode" from random characters when they scroll in.
