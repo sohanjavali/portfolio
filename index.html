@@ -28,7 +28,7 @@
 </head>
 <body>
   <header class="nav">
-    <a class="mark" href="#top" aria-label="Back to top">SJ</a>
+    <a class="mark" href="#top" aria-label="Back to top">SJ<span>_</span></a>
     <nav aria-label="Sections">
       <a href="#work">Work</a>
       <a href="#experience">Experience</a>
@@ -36,12 +36,13 @@
       <a href="#contact">Contact</a>
     </nav>
     <p class="status"><span class="dot" aria-hidden="true"></span>Open to Spring 2027 co-op</p>
+    <span class="progress" aria-hidden="true"></span>
   </header>
 
   <main id="top">
     <!-- ============ HERO ============ -->
     <section class="hero">
-      <!-- Decorative background: lines tracing paths behind the name. Drawn by main.js. -->
+      <!-- Decorative background: agents moving across a grid in parallel. Drawn by main.js. -->
       <canvas class="grid" aria-hidden="true"></canvas>
 
       <div class="hero-inner wrap">
@@ -54,7 +55,7 @@
             <a class="btn ghost" href="mailto:sohanjavali@gmail.com" data-email>Email me</a>
           </div>
         </div>
-        <p class="spawn-hint mono" aria-hidden="true">click to start a new path</p>
+        <p class="spawn-hint mono" aria-hidden="true">click the grid to spawn an agent</p>
       </div>
     </section>
 
@@ -78,6 +79,7 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
+              <li class="cmd" data-at="0">$ run lareg --docket</li>
               <li data-at="150" data-done="500"><span class="st"></span><b>retrieve</b> find filings in Postgres, pull PDFs from S3</li>
               <li data-at="500" data-done="850"><span class="st"></span><b>ocr</b> Textract on scanned pages</li>
               <li data-at="850" data-done="1100"><span class="st"></span><b>budget</b> whole filings only</li>
@@ -126,6 +128,7 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
+              <li class="cmd" data-at="0">$ run vault</li>
               <li data-at="150" data-done="400"><span class="st"></span><b>context</b> load where I left off</li>
               <li data-at="400" data-done="700"><span class="st"></span><b>capture</b> new thought into the inbox</li>
               <li data-at="700" data-done="1000"><span class="st"></span><b>route</b> one note, every file it belongs in</li>
@@ -176,6 +179,7 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
+              <li class="cmd" data-at="0">$ run autopod "why bridges sway"</li>
               <li data-at="150" data-done="450"><span class="st"></span><b>validate</b> is the topic safe and doable</li>
               <li data-at="450" data-done="750"><span class="st"></span><b>research</b> Claude gathers structured notes</li>
               <li data-at="750" data-done="1050"><span class="st"></span><b>script</b> Claude writes it for multiple hosts</li>
@@ -220,6 +224,7 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
+              <li class="cmd" data-at="0">$ run occupancy --country US</li>
               <li data-at="150" data-done="400"><span class="st"></span><b>sites</b> pull malls from OpenStreetMap</li>
               <li data-at="400" data-done="650"><span class="st"></span><b>sample</b> same weekday, every month</li>
               <li data-at="650" data-done="950"><span class="st"></span><b>frames</b> nearest clear satellite pass</li>
@@ -264,6 +269,7 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
+              <li class="cmd" data-at="0">$ run outbound --daily</li>
               <li data-at="150" data-done="450"><span class="st"></span><b>leads</b> find and score new leads</li>
               <li data-at="450" data-done="800"><span class="st"></span><b>draft</b> write each email in your voice</li>
               <li data-at="800" data-done="1100"><span class="st"></span><b>approve</b> hold for a human yes</li>

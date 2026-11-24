@@ -4,14 +4,14 @@
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ------------------------------------------------------------------
-   1. Hero background: lines tracing paths across an invisible lattice.
-      Each one moves point to point, sometimes turns, leaves a fading
-      trail, and now and then drops a small label of a real task.
+   1. Hero background: "agents" moving across a faint grid in parallel.
+      Each agent walks node to node, sometimes turns, leaves a fading
+      trail, and now and then finishes a task (a ripple and a label).
    ------------------------------------------------------------------ */
 const canvas = document.querySelector('.grid');
 if (canvas) {
   const ctx = canvas.getContext('2d');
-  const GAP = 32;                       // px between lattice points
+  const GAP = 32;                       // px between grid dots
   // Little "task finished" labels, pulled from things I've actually built
   const TASKS = [
     'parse docket', 'fetch filings', 'ocr scan', 'extract fields', 'cite source', 'check owner', 'retrain bert',
@@ -21,21 +21,31 @@ if (canvas) {
     'capture note', 'route inbox', 'lint note', 'commit', 'push backup', 'weekly audit',
     'run tests', 'review diff', 'merge', 'deploy',
   ];
-  let w = 0, h = 0, cols = 0, rows = 0, colors = {};
-  let paths = [], ripples = [], last = 0, running = false, visible = true;
+  let w = 0, h = 0, cols = 0, rows = 0, dots = null, colors = {};
+  let agents = [], ripples = [], last = 0, running = false, visible = true;
 
   const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  const readColors = () => { colors = { label: css('--muted'), accent: css('--accent') }; };
+  const readColors = () => { colors = { dot: css('--dim'), trail: css('--muted'), accent: css('--accent'), ok: css('--ok') }; };
 
+  // Draw the static grid once onto an offscreen canvas, then copy it each frame (much cheaper).
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     w = canvas.clientWidth; h = canvas.clientHeight;
     canvas.width = w * dpr; canvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cols = Math.ceil(w / GAP); rows = Math.ceil(h / GAP);
+    dots = document.createElement('canvas');
+    dots.width = w * dpr; dots.height = h * dpr;
+    const d = dots.getContext('2d');
+    d.setTransform(dpr, 0, 0, dpr, 0, 0);
+    d.strokeStyle = colors.dot; d.globalAlpha = 0.14; d.lineWidth = 1;   // very faint gray grid lines
+    d.beginPath();
+    for (let x = 0; x <= cols; x++) { d.moveTo(x * GAP + 0.5, 0); d.lineTo(x * GAP + 0.5, h); }
+    for (let y = 0; y <= rows; y++) { d.moveTo(0, y * GAP + 0.5); d.lineTo(w, y * GAP + 0.5); }
+    d.stroke();
     const target = Math.max(5, Math.min(16, Math.round(w / 100)));
-    while (paths.length < target) paths.push(spawn());
-    paths.length = Math.min(paths.length, target + 8);
+    while (agents.length < target) agents.push(spawn());
+    agents.length = Math.min(agents.length, target + 8);
   }
 
   const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
@@ -57,14 +67,14 @@ if (canvas) {
     if (Math.random() < 0.12) {                                  // turn left or right, never reverse
       [a.dx, a.dy] = Math.random() < 0.5 ? [a.dy, -a.dx] : [-a.dy, a.dx];
     }
-    if (Math.random() < 0.05) {                                  // drop a task label
+    if (Math.random() < 0.05) {                                  // "finished a task"
       ripples.push({ x: a.x, y: a.y, age: 0, label: TASKS[Math.floor(Math.random() * TASKS.length)] });
     }
     if (a.x < -1 || a.y < -1 || a.x > cols + 1 || a.y > rows + 1) Object.assign(a, spawn(), { trail: [] });
   }
 
   function update(dt) {
-    for (const a of paths) {
+    for (const a of agents) {
       a.t += a.speed * dt;
       while (a.t >= 1) { a.t -= 1; step(a); }
     }
@@ -74,9 +84,10 @@ if (canvas) {
 
   function draw() {
     ctx.clearRect(0, 0, w, h);
-    ctx.lineCap = 'butt';                  // flat ends so segments don't stack into dots at joints
+    ctx.drawImage(dots, 0, 0, w, h);
+    ctx.lineCap = 'round';
 
-    for (const a of paths) {
+    for (const a of agents) {
       const hx = (a.x + a.dx * a.t) * GAP, hy = (a.y + a.dy * a.t) * GAP;
       const pts = [...a.trail.map(([x, y]) => [x * GAP, y * GAP]), [a.x * GAP, a.y * GAP], [hx, hy]];
       ctx.strokeStyle = colors.accent; ctx.lineWidth = 1.5;
@@ -84,14 +95,18 @@ if (canvas) {
         ctx.globalAlpha = (i / pts.length) * 0.6;
         ctx.beginPath(); ctx.moveTo(...pts[i - 1]); ctx.lineTo(...pts[i]); ctx.stroke();
       }
-      ctx.globalAlpha = 1; ctx.fillStyle = colors.accent;        // square head
+      ctx.globalAlpha = 0.18; ctx.fillStyle = colors.accent;     // soft glow, then the head
+      ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
       ctx.fillRect(hx - 2.5, hy - 2.5, 5, 5);
     }
 
     ctx.font = '11px "JetBrains Mono", ui-monospace, monospace';
     for (const r of ripples) {
       const k = r.age / 1.6, x = r.x * GAP, y = r.y * GAP;
-      ctx.globalAlpha = (1 - k) * 0.8; ctx.fillStyle = colors.label;
+      ctx.globalAlpha = (1 - k) * 0.8; ctx.strokeStyle = colors.ok; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(x, y, 4 + k * 26, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = colors.ok;
       ctx.fillText(r.label, x + 10, y - 10 - k * 8);
     }
     ctx.globalAlpha = 1;
@@ -116,13 +131,13 @@ if (canvas) {
   new ResizeObserver(() => { resize(); if (!running) draw(); }).observe(canvas);
   window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { readColors(); resize(); draw(); });
 
-  // Click to start a new path at the nearest lattice point.
+  // Click the grid to drop in a new agent at the nearest grid point.
   canvas.addEventListener('pointerdown', (e) => {
     const rect = canvas.getBoundingClientRect();
     const x = Math.round((e.clientX - rect.left) / GAP), y = Math.round((e.clientY - rect.top) / GAP);
-    paths.push(spawn(x, y));
-    if (paths.length > 24) paths.shift();
-    ripples.push({ x, y, age: 0, label: 'new path' });
+    agents.push(spawn(x, y));
+    if (agents.length > 24) agents.shift();
+    ripples.push({ x, y, age: 0, label: 'spawned' });
     if (!running) draw();
   });
 }
@@ -184,68 +199,18 @@ const seen = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal, [data-scramble]').forEach((el) => seen.observe(el));
 
 /* ------------------------------------------------------------------
-   4. Nav gets a bottom border once you scroll.
+   4. Nav gets a bottom border once you scroll, and the progress line fills.
    ------------------------------------------------------------------ */
 const nav = document.querySelector('.nav');
-const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+const onScroll = () => {
+  nav.classList.toggle('scrolled', window.scrollY > 8);
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  nav.style.setProperty('--progress', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
+};
 window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
 /* ------------------------------------------------------------------
-   4b. Notion-style scrollbar. The native one is hidden (html.sb) and this
-       draws a thin bar that appears while you scroll or hover the right
-       edge, then fades out about a second later. You can drag it.
-       Mouse/trackpad only: touch devices keep their own overlay bars.
-   ------------------------------------------------------------------ */
-if (window.matchMedia('(pointer: fine)').matches) {
-  const root = document.documentElement;
-  root.classList.add('sb');
-  const rail = document.createElement('div'); rail.className = 'sb-rail'; rail.setAttribute('aria-hidden', 'true');
-  const thumb = document.createElement('div'); thumb.className = 'sb-thumb';
-  rail.append(thumb); document.body.append(rail);
-  let hideTimer, dragFrom = null;
-
-  // Thumb height is the visible share of the page; its top tracks scroll position.
-  const place = () => {
-    const view = window.innerHeight, full = root.scrollHeight;
-    const hgt = Math.max(36, (view / full) * view);
-    const max = full - view;
-    thumb.style.height = hgt + 'px';
-    thumb.style.top = (max > 0 ? (window.scrollY / max) * (view - hgt) : 0) + 'px';
-    rail.style.display = max > 0 ? '' : 'none';
-  };
-  const show = () => {
-    rail.classList.add('show');
-    clearTimeout(hideTimer);
-    hideTimer = setTimeout(() => { if (!dragFrom) rail.classList.remove('show'); }, 1000);
-  };
-  window.addEventListener('scroll', () => { place(); show(); }, { passive: true });
-  window.addEventListener('resize', place);
-  new ResizeObserver(place).observe(document.body);   // page height changes when a row opens
-  rail.addEventListener('pointerenter', show);
-
-  // Drag: map mouse movement on the rail to page scroll.
-  thumb.addEventListener('pointerdown', (e) => {
-    e.preventDefault(); thumb.setPointerCapture(e.pointerId);
-    dragFrom = { y: e.clientY, scroll: window.scrollY }; rail.classList.add('drag', 'show');
-  });
-  thumb.addEventListener('pointermove', (e) => {
-    if (!dragFrom) return;
-    const view = window.innerHeight, full = root.scrollHeight;
-    const hgt = thumb.offsetHeight, ratio = (full - view) / (view - hgt);
-    window.scrollTo({ top: dragFrom.scroll + (e.clientY - dragFrom.y) * ratio, behavior: 'instant' });
-  });
-  thumb.addEventListener('pointerup', () => { dragFrom = null; rail.classList.remove('drag'); show(); });
-  // Click the empty rail to jump there.
-  rail.addEventListener('pointerdown', (e) => {
-    if (e.target !== rail) return;
-    const view = window.innerHeight;
-    window.scrollTo({ top: (e.clientY / view) * (root.scrollHeight - view) });
-  });
-  place();
-}
-
-/* ------------------------------------------------------------------
-   5. Project rows: the first time one opens, play its step log, then
+   5. Project rows: the first time one opens, play its agent log, then
       reveal the write-up. After that it opens instantly.
    ------------------------------------------------------------------ */
 // Each log line has data-at (ms until it appears) and optionally data-done
@@ -272,3 +237,44 @@ for (const row of document.querySelectorAll('details.run')) {
     setTimeout(() => { row.classList.remove('running'); row.classList.add('played'); }, total + 350);
   });
 }
+
+/* ------------------------------------------------------------------
+   6. Scroll rail on the right edge. 34 ticks stand for the whole page.
+      Each tick's "closeness" f to your current position (0 to 1) sets
+      its length and opacity: f = (1 - distance / 6)^2, so the bump is
+      about 5 ticks wide on each side. Drag the rail or click a tick.
+   ------------------------------------------------------------------ */
+(() => {
+  const N = 34, SPREAD = 6, MIN_W = 6, MAX_W = 28, MIN_O = 0.22;
+  const root = document.documentElement;
+  const rail = document.createElement('div');
+  rail.className = 'rail'; rail.setAttribute('aria-hidden', 'true');
+  const ticks = Array.from({ length: N }, () => rail.appendChild(document.createElement('span')));
+  document.body.append(rail);
+
+  const progress = () => { const max = root.scrollHeight - innerHeight; return max > 0 ? scrollY / max : 0; };
+  const paint = () => {
+    const at = progress() * (N - 1);                       // fractional tick index you're "at"
+    ticks.forEach((t, i) => {
+      const f = Math.max(0, 1 - Math.abs(i - at) / SPREAD) ** 2;
+      t.style.width = (MIN_W + (MAX_W - MIN_W) * f) + 'px';
+      t.style.opacity = MIN_O + (1 - MIN_O) * f;
+    });
+  };
+  addEventListener('scroll', paint, { passive: true });
+  addEventListener('resize', paint);
+  new ResizeObserver(paint).observe(document.body);
+  paint();
+
+  // Map a pointer's height on the rail to a spot on the page.
+  const scrollToPointer = (y, smooth) => {
+    const r = rail.getBoundingClientRect();
+    const p = Math.min(1, Math.max(0, (y - r.top) / r.height));
+    scrollTo({ top: p * (root.scrollHeight - innerHeight), behavior: smooth ? 'smooth' : 'instant' });
+  };
+  let dragging = false;
+  rail.addEventListener('pointerdown', (e) => { dragging = true; rail.classList.add('drag'); rail.setPointerCapture(e.pointerId); scrollToPointer(e.clientY, true); });
+  rail.addEventListener('pointermove', (e) => { if (dragging) scrollToPointer(e.clientY, false); });
+  const end = () => { dragging = false; rail.classList.remove('drag'); };
+  rail.addEventListener('pointerup', end); rail.addEventListener('pointercancel', end);
+})();
