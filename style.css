@@ -364,7 +364,7 @@ summary:hover .go { background: var(--accent); color: #fff; }
    Scroll rail: a column of thin ticks on the right edge. The tick at your
    scroll position is long and solid; neighbors shrink and fade. main.js
    sets each tick's width and opacity. Drag it (or click a tick) to scroll.
-   The native scrollbar is left alone, so macOS shows its own overlay bar.
+   On desktop it replaces the native scrollbar; phones keep their own.
    ========================================================= */
 .rail {
   position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 40;
@@ -379,11 +379,9 @@ summary:hover .go { background: var(--accent); color: #fff; }
 }
 .rail:hover span { transform: scaleX(1.25); }
 @media (max-width: 48rem), (pointer: coarse) { .rail { display: none; } }
-
-/* Reading-progress line under the nav; main.js sets --progress from 0 to 1 */
-.progress {
-  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
-  background: linear-gradient(90deg, var(--accent), var(--ok));
-  transform-origin: left; transform: scaleX(var(--progress, 0));
-  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 60%, transparent);
+/* Where the rail shows, it replaces the native scrollbar entirely */
+@media (min-width: 48.01rem) and (pointer: fine) {
+  html { scrollbar-width: none; }
+  html::-webkit-scrollbar { display: none; }
 }
+

@@ -9,8 +9,8 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
       trail, and now and then finishes a task (a ripple and a label).
       field() builds one of these on a canvas. It runs twice:
         - the hero, at full strength, where you can click to spawn agents
-        - a fixed layer behind the rest of the page, muted (strength 0.35,
-          fewer and slower agents) so it doesn't fight the text
+        - a fixed layer behind the rest of the page, heavily muted: a barely
+          visible grid, a few slow dim lines, no labels or glow
    ------------------------------------------------------------------ */
 // Little "task finished" labels, pulled from things I've actually built
 const TASKS = [
@@ -24,7 +24,7 @@ const TASKS = [
 const GAP = 32;                         // px between grid lines
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
-function field(canvas, { strength = 1, perPx = 100, speed = 1, spread = 0.8 } = {}) {
+function field(canvas, { strength = 1, gridAlpha = 0.14, labels = true, perPx = 100, speed = 1, spread = 0.8 } = {}) {
   const ctx = canvas.getContext('2d');
   let w = 0, h = 0, cols = 0, rows = 0, grid = null, colors = {};
   let agents = [], ripples = [], last = 0, running = false, active = true;
@@ -41,7 +41,7 @@ function field(canvas, { strength = 1, perPx = 100, speed = 1, spread = 0.8 } = 
     grid.width = w * dpr; grid.height = h * dpr;
     const d = grid.getContext('2d');
     d.setTransform(dpr, 0, 0, dpr, 0, 0);
-    d.strokeStyle = colors.line; d.globalAlpha = 0.14 * Math.max(strength, 0.6); d.lineWidth = 1;   // very faint gray grid
+    d.strokeStyle = colors.line; d.globalAlpha = gridAlpha; d.lineWidth = 1;   // very faint gray grid
     d.beginPath();
     for (let x = 0; x <= cols; x++) { d.moveTo(x * GAP + 0.5, 0); d.lineTo(x * GAP + 0.5, h); }
     for (let y = 0; y <= rows; y++) { d.moveTo(0, y * GAP + 0.5); d.lineTo(w, y * GAP + 0.5); }
@@ -70,7 +70,7 @@ function field(canvas, { strength = 1, perPx = 100, speed = 1, spread = 0.8 } = 
     if (Math.random() < 0.12) {                                  // turn left or right, never reverse
       [a.dx, a.dy] = Math.random() < 0.5 ? [a.dy, -a.dx] : [-a.dy, a.dx];
     }
-    if (Math.random() < 0.05) {                                  // "finished a task"
+    if (labels && Math.random() < 0.05) {                        // "finished a task"
       ripples.push({ x: a.x, y: a.y, age: 0, label: TASKS[Math.floor(Math.random() * TASKS.length)] });
     }
     if (a.x < -1 || a.y < -1 || a.x > cols + 1 || a.y > rows + 1) Object.assign(a, spawn(), { trail: [] });
@@ -99,8 +99,11 @@ function field(canvas, { strength = 1, perPx = 100, speed = 1, spread = 0.8 } = 
         ctx.globalAlpha = (i / pts.length) * 0.6 * strength;
         ctx.beginPath(); ctx.moveTo(...pts[i - 1]); ctx.lineTo(...pts[i]); ctx.stroke();
       }
-      ctx.globalAlpha = 0.18 * strength; ctx.fillStyle = colors.accent;     // soft glow, then the head
-      ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
+      if (labels) {                                              // soft glow (hero only), then the head
+        ctx.globalAlpha = 0.18 * strength; ctx.fillStyle = colors.accent;
+        ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.fillStyle = colors.accent;
       ctx.globalAlpha = strength;
       ctx.fillRect(hx - 2.5, hy - 2.5, 5, 5);
     }
@@ -161,7 +164,7 @@ if (heroCanvas) {
 // Rest of the page: a fixed, muted layer that fades in as the hero scrolls away.
 const pageCanvas = document.querySelector('.field');
 if (pageCanvas) {
-  const bg = field(pageCanvas, { strength: 0.35, perPx: 220, speed: 0.6, spread: 1 });
+  const bg = field(pageCanvas, { strength: 0.14, gridAlpha: 0.05, labels: false, perPx: 260, speed: 0.5, spread: 1 });
   const heroEl = document.querySelector('.hero');
   const fade = () => {
     const hh = heroEl ? heroEl.offsetHeight : innerHeight;
@@ -231,14 +234,10 @@ const seen = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal, [data-scramble]').forEach((el) => seen.observe(el));
 
 /* ------------------------------------------------------------------
-   4. Nav gets a bottom border once you scroll, and the progress line fills.
+   4. Nav gets a bottom border once you scroll.
    ------------------------------------------------------------------ */
 const nav = document.querySelector('.nav');
-const onScroll = () => {
-  nav.classList.toggle('scrolled', window.scrollY > 8);
-  const max = document.documentElement.scrollHeight - window.innerHeight;
-  nav.style.setProperty('--progress', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
-};
+const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
 window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
 /* ------------------------------------------------------------------
