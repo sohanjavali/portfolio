@@ -25,3 +25,7 @@ Vercel watches this repo's `main` branch and redeploys on every push, usually in
 ## Rules for the content
 
 Numbers only when they're real (from the resume or measured). No m-dashes. Every line has to be something I can explain in an interview.
+
+## Link preview
+
+`og.png` is the image that shows when the link is pasted into iMessage, Slack, LinkedIn, or Gmail. Its source is `og-card.html`: open it in a browser at 1200x630, screenshot it, and save over `og.png`. The text in the preview comes from the `og:` tags at the top of `index.html`.
