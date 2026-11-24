@@ -315,7 +315,6 @@ summary:hover .go { background: var(--accent); color: #fff; }
 .toast.show { transform: translate(-50%, 0); opacity: 1; }
 .toast a { color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
 
-.foot { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-top: 1.5rem; padding-bottom: 2rem; border-top: 1px solid var(--line); font-size: 0.75rem; color: var(--dim); }
 
 /* =========================================================
    Scroll reveal: main.js adds .in when an element scrolls into view
