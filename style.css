@@ -1,172 +1,264 @@
-/* Colors live in variables so dark mode only has to swap the values. */
+/* ---------- Tokens: dark mode only swaps these values ---------- */
 :root {
-  --bg: #fbfaf7;
-  --text: #1d1d1b;
-  --muted: #6b6a64;
-  --rule: #e4e1d9;
-  --accent: #2f5d50;
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --text: #18181b;
+  --muted: #71717a;
+  --rule: #e4e4e7;
+  --accent: #e2551f;          /* orange: links, the "run" button, the status dot */
+  --ok: #16a34a;              /* green: finished agents */
+  --term-bg: #121214;         /* the terminal stays dark in both themes */
+  --term-text: #d4d4d8;
+  --term-dim: #71717a;
+  --sans: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-/* Follows the visitor's OS setting. No toggle, no JavaScript. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #141513;
-    --text: #e8e6e1;
-    --muted: #9a988f;
-    --rule: #2c2d2a;
-    --accent: #8cc2b0;
+    --bg: #0b0b0c;
+    --surface: #141416;
+    --text: #ececee;
+    --muted: #8b8b93;
+    --rule: #26262a;
+    --accent: #ff7a45;
+    --ok: #4ade80;
+    --term-bg: #141416;
   }
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  /* System fonts: nothing to download, so the page renders instantly. */
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--sans);
   font-size: 1.0625rem;
-  line-height: 1.65;
+  line-height: 1.6;
 }
 
-/* One narrow column. ~65 characters per line is the comfortable reading width. */
 main {
-  max-width: 40rem;
+  max-width: 62rem;
   margin: 0 auto;
-  padding: 4.5rem 1.5rem 3rem;
+  padding: 5rem 1.5rem 3rem;
 }
 
-h1,
-h2,
-h3 {
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: normal;
-  line-height: 1.25;
-  margin: 0;
-}
-
-h1 {
-  font-size: 2.4rem;
-  letter-spacing: -0.01em;
-}
-
-h2 {
-  font-size: 0.8rem;
-  font-family: inherit;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--muted);
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--rule);
-  margin-bottom: 1.75rem;
-}
-
-h3 {
-  font-size: 1.3rem;
-}
-
-p {
-  margin: 0 0 1rem;
-}
+h1, h2, p { margin: 0; }
+p + p { margin-top: 1rem; }
 
 a {
   color: var(--accent);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
+  text-underline-offset: 0.2em;
+}
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+
+/* ---------- Hero: text left, terminal right; stacks on phones ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  margin-bottom: 6rem;
 }
 
-a:hover {
-  text-decoration-thickness: 2px;
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  margin-bottom: 1.5rem;
+}
+.dot {
+  width: 0.5rem; height: 0.5rem;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 var(--ok);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 60%, transparent); }
+  70%  { box-shadow: 0 0 0 8px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
 }
 
-a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-  border-radius: 2px;
+h1 {
+  font-size: clamp(2.8rem, 7vw, 4.75rem);  /* scales with screen width, within limits */
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+  margin-bottom: 1.5rem;
 }
+.lede { font-size: 1.35rem; line-height: 1.4; font-weight: 500; }
+.sub { color: var(--muted); }
+.links { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.75rem; font-weight: 500; }
 
-.intro {
-  margin-bottom: 3.5rem;
+/* ---------- Terminal + agent logs (shared look) ---------- */
+.term, .log {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.9;
+  color: var(--term-text);
+  background: var(--term-bg);
+  border-radius: 12px;
 }
+.term { border: 1px solid #27272a; box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.35); overflow: hidden; }
+.term-bar { display: flex; align-items: center; gap: 6px; padding: 0.6rem 0.9rem; border-bottom: 1px solid #27272a; color: var(--term-dim); }
+.term-bar i { width: 10px; height: 10px; border-radius: 50%; background: #3f3f46; }
+.term-bar span { margin-left: 0.5rem; }
 
-.intro h1 {
-  margin-bottom: 1.25rem;
+.lanes, .log { list-style: none; margin: 0; padding: 1rem 1.1rem; }
+.lanes li, .log li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lanes b, .log b { font-weight: 600; color: #fafafa; display: inline-block; min-width: 5.5em; margin-right: 0.4em; }
+.cmd { color: var(--term-dim); }
+.out { color: var(--accent); }
+
+/* Status mark: a check by default (no-JS), a spinner while an agent is still working */
+.st { display: inline-block; width: 1.4em; color: var(--ok); }
+.st::before { content: "✓"; }
+.js li:not(.done) > .st::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em; height: 0.7em;
+  border: 2px solid var(--term-dim);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  vertical-align: -0.05em;
+  animation: spin 0.7s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.lede {
-  font-size: 1.2rem;
+/* With JS, lines start hidden and main.js adds .on at each line's data-at time */
+.js .lanes li, .js .log li { opacity: 0; transform: translateY(3px); transition: opacity 0.2s, transform 0.2s; }
+.js .lanes li.on, .js .log li.on { opacity: 1; transform: none; }
+
+/* ---------- Section headings ---------- */
+section { margin-bottom: 5rem; }
+.section-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.75rem; }
+h2 { font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.14em; color: var(--muted); }
+.hint { font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+
+/* ---------- Project rows: native <details>, so they open even without JS ---------- */
+.run { border-bottom: 1px solid var(--rule); }
+summary {
+  list-style: none;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  gap: 1rem;
+  align-items: start;
+  padding: 1.75rem 0;
 }
+summary::-webkit-details-marker { display: none; }
 
-.links {
+.idx { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); padding-top: 0.55rem; }
+.head { display: flex; flex-direction: column; gap: 0.2rem; }
+.name { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+.meta { font-size: 0.9rem; color: var(--muted); }
+.one { margin-top: 0.4rem; max-width: 38rem; }
+
+.go {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 0.25rem 0.8rem;
+  margin-top: 0.5rem;
+  transition: background 0.15s, color 0.15s;
+}
+.go::before { content: "▸ "; }
+summary:hover .go { background: var(--accent); color: var(--bg); }
+.run[open] .go::before { content: "▾ "; }
+.run[open] .go { opacity: 0.6; }
+
+.panel { padding: 0 0 2rem 4rem; }   /* lines up with the title, past the 01/02 column */
+.body { max-width: 40rem; }
+
+/* Run states: .running shows the log and hides the write-up; .played reveals the write-up */
+.log { display: none; margin-bottom: 1rem; max-width: 40rem; }
+.js .run.running .log { display: block; }
+.js .run.running .body { display: none; }
+.js .run.played .body { animation: rise 0.4s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---------- Flow diagrams: plain boxes with arrows between them ---------- */
+.flow {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  margin-top: 1.5rem;
+  align-items: center;
+  gap: 0.5rem 0;
+  margin: 1.5rem 0;
+  font-family: var(--mono);
+  font-size: 0.78rem;
 }
-
-section {
-  margin-bottom: 3rem;
+.flow > span {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  white-space: nowrap;
 }
-
-article {
-  margin-bottom: 2.25rem;
-}
-
-article:last-child {
-  margin-bottom: 0;
-}
-
-/* Name on the left, date on the right; wraps under on narrow phones. */
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 0 1rem;
-}
-
-.when,
-.role,
-.stack {
+.flow > span:not(:last-child) { margin-right: 1.9rem; position: relative; }
+.flow > span:not(:last-child)::after {   /* arrow sits in the gap, outside the box */
+  content: "→";
+  position: absolute;
+  right: -1.45rem;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--muted);
-  font-size: 0.92rem;
+}
+.flow > .end { border-color: var(--accent); color: var(--accent); }
+
+.flow .stack-of { display: inline-flex; flex-direction: column; gap: 0.25rem; padding: 0.35rem; }
+.flow .stack-of span { border: 1px dashed var(--muted); border-radius: 4px; padding: 0.05rem 0.5rem; text-align: center; }
+
+.tags { font-size: 0.85rem; color: var(--muted); margin-top: 1.25rem; }
+
+/* ---------- Earlier work: compact, no interaction ---------- */
+.earlier { list-style: none; margin: 0; padding: 0; }
+.earlier li {
+  display: grid;
+  grid-template-columns: 15rem 1fr;
+  gap: 0.2rem 2rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.earlier .name { font-size: 1.05rem; font-weight: 700; letter-spacing: 0; }
+.earlier .meta { grid-column: 1; grid-row: 2; }
+.earlier .one { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
+
+/* ---------- Contact ---------- */
+.contact h2 { margin-bottom: 1rem; }
+.big { font-size: clamp(1.5rem, 4.5vw, 2.5rem); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1rem; word-break: break-word; }
+.big a { color: var(--text); text-decoration-color: var(--accent); }
+
+footer { border-top: 1px solid var(--rule); padding-top: 1.25rem; font-size: 0.85rem; color: var(--muted); }
+
+/* ---------- Phones ---------- */
+@media (max-width: 48rem) {
+  main { padding-top: 3rem; }
+  .hero { grid-template-columns: 1fr; gap: 2.5rem; margin-bottom: 4rem; }
+  summary { grid-template-columns: 1fr auto; }
+  .idx { display: none; }
+  .panel { padding-left: 0; }
+  .earlier li { grid-template-columns: 1fr; }
+  .earlier .meta, .earlier .one { grid-column: 1; grid-row: auto; }
+  .earlier .one { margin-top: 0.3rem; }
 }
 
-.role {
-  margin: 0.15rem 0 0.75rem;
+/* People who ask their OS for less motion get no spinners or slide-ins */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-.stack {
-  margin-top: -0.25rem;
-}
 
-footer {
-  border-top: 1px solid var(--rule);
-  padding-top: 1.25rem;
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-@media (max-width: 30rem) {
-  main {
-    padding-top: 3rem;
-  }
-
-  h1 {
-    font-size: 2rem;
-  }
-}
-
-/* Entries without a role line (projects) still need room under the heading. */
-.row + p:not(.role) {
-  margin-top: 0.6rem;
-}
+/* Let the closing line of each log wrap instead of getting cut off on phones */
+.lanes li.out, .log li.out { white-space: normal; }

@@ -4,7 +4,7 @@ My personal site. Plain HTML and CSS, no framework, no build step, no JavaScript
 
 ## Files
 
-`index.html` holds all the content. `style.css` holds all the styling, including dark mode, which follows the visitor's system setting through `prefers-color-scheme`.
+`index.html` holds all the content. `style.css` holds all the styling, including dark mode (follows the system setting via `prefers-color-scheme`). `main.js` only plays the agent-run animations; the page works without it.
 
 ## Updating it
 

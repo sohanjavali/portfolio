@@ -4,93 +4,159 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sohan Javali</title>
-  <meta name="description" content="Computer science student at the University of Waterloo. I build software with LLMs at the center of it.">
+  <meta name="description" content="CS at the University of Waterloo. I build LLM pipelines, and I build them by running AI agents in parallel.">
   <meta name="color-scheme" content="light dark">
 
   <!-- Link previews (LinkedIn, iMessage, Slack) read these tags -->
   <meta property="og:title" content="Sohan Javali">
-  <meta property="og:description" content="Computer science student at the University of Waterloo. I build software with LLMs at the center of it.">
+  <meta property="og:description" content="CS at the University of Waterloo. I build LLM pipelines, and I build them by running AI agents in parallel.">
   <meta property="og:type" content="website">
 
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232f5d50'/%3E%3Ctext x='16' y='21.5' font-family='Georgia,serif' font-size='15' fill='white' text-anchor='middle'%3ESJ%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2318181b'/%3E%3Ctext x='16' y='21' font-family='Menlo,monospace' font-size='13' font-weight='700' fill='%23ff7a45' text-anchor='middle'%3ESJ%3C/text%3E%3C/svg%3E">
+
+  <!-- Satoshi from Fontshare (free). preconnect starts the connection early. -->
+  <link rel="preconnect" href="https://api.fontshare.com">
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap">
   <link rel="stylesheet" href="style.css">
+
+  <!-- Marks that JS is running, so CSS only hides things JS will reveal. Without JS, everything shows. -->
+  <script>document.documentElement.classList.add('js')</script>
+  <script src="main.js" defer></script>
 </head>
 <body>
   <main>
-    <header class="intro">
-      <h1>Sohan Javali</h1>
-      <p class="lede">I study computer science at the University of Waterloo, and I build software with language models at the center of it.</p>
-      <p>Last summer I rebuilt an LLM pipeline that pulls structured data out of regulatory filings, and I did most of it by running AI coding agents in parallel. I'm looking for a co-op for Spring 2027 (May to August). I'm a U.S. citizen with a Canadian work permit.</p>
-      <nav class="links" aria-label="Contact">
-        <a href="mailto:sohanjavali@gmail.com">Email</a>
-        <a href="https://www.linkedin.com/in/sohan-javali">LinkedIn</a>
-        <a href="https://github.com/sohanjavali">GitHub</a>
-      </nav>
-    </header>
+    <section class="hero">
+      <div class="hero-text">
+        <p class="pill"><span class="dot" aria-hidden="true"></span>Open to Spring 2027 co-op</p>
+        <h1>Sohan Javali</h1>
+        <p class="lede">CS at Waterloo. I build LLM pipelines, and I build them by running AI agents in parallel.</p>
+        <p class="sub">Looking for a co-op from May to August 2027. U.S. citizen with a Canadian work permit.</p>
+        <nav class="links" aria-label="Contact">
+          <a href="mailto:sohanjavali@gmail.com">Email</a>
+          <a href="https://www.linkedin.com/in/sohan-javali">LinkedIn</a>
+          <a href="https://github.com/sohanjavali">GitHub</a>
+        </nav>
+      </div>
 
-    <section aria-labelledby="work">
-      <h2 id="work">Work</h2>
-
-      <article>
-        <div class="row">
-          <h3>LaReg Corp.</h3>
-          <span class="when">Summer 2026</span>
-        </div>
-        <p class="role">Regulatory Research Intern, Boston</p>
-        <p>State utility commissions keep dockets, the case files for proposed energy projects like solar farms and transmission lines. Companies file PDFs into them, and LaReg sells the structured data buried in those PDFs. I rebuilt the pipeline that gets it out. Given a docket, it finds the filings in Postgres, pulls the PDFs from S3, runs OCR with AWS Textract on scanned pages, and sends the text to Gemini to fill in a structured record where every field cites the page it came from.</p>
-        <p>The field I spent the most time on was ownership. The model kept naming the applicant as the owner, so I added deterministic checks after extraction that blank the answer unless the cited text actually says who owns the project. I also retrained the BERT classifier that sorts each project into a subcategory.</p>
-        <p>The other half of the job was how the work got done. I ran several AI coding agents at once, each on its own piece of the pipeline, inside guardrails I set: read-only access to production data, changes to outputs could only add and never overwrite, and every claim had to cite a docket number. My part was scoping the tasks, reviewing what came back, and deciding what shipped.</p>
-        <p class="stack">Python, Gemini, AWS S3, Textract, PostgreSQL, PyTorch, Hugging Face</p>
-      </article>
-
-      <article>
-        <div class="row">
-          <h3>Avesha</h3>
-          <span class="when">Fall 2024</span>
-        </div>
-        <p class="role">Technical Team Intern, Boston</p>
-        <p>Wrote unit tests for an AI-driven Kubernetes pod autoscaler, covering its scaling logic and the edge cases, and tested its REST endpoints with Postman.</p>
-      </article>
-
-      <article>
-        <div class="row">
-          <h3>Work Based Learning Alliance</h3>
-          <span class="when">Winter 2025</span>
-        </div>
-        <p class="role">Technology Specialist Intern, Boston</p>
-        <p>Worked with a small team to help a local vocal coaching business grow its online programs using automation and AI tools.</p>
-      </article>
-
-      <article>
-        <div class="row">
-          <h3>Holliston High School</h3>
-          <span class="when">2024 to 2025</span>
-        </div>
-        <p class="role">Teaching Assistant, AP Computer Science A and Principles</p>
-        <p>Taught Java and Python fundamentals, helped students through labs, and wrote the programming evaluations.</p>
-      </article>
+      <!-- Decorative: three agents working at once, finishing at different times -->
+      <div class="term" aria-hidden="true">
+        <div class="term-bar"><i></i><i></i><i></i><span>~/sohan</span></div>
+        <ol class="lanes">
+          <li class="cmd" data-at="0">$ run agents --parallel</li>
+          <li data-at="250" data-done="1100"><span class="st"></span><b>agent 1</b> reading resume</li>
+          <li data-at="250" data-done="1700"><span class="st"></span><b>agent 2</b> scanning github</li>
+          <li data-at="250" data-done="2300"><span class="st"></span><b>agent 3</b> summarizing work</li>
+          <li class="out" data-at="2600">ready. open a project below to run it.</li>
+        </ol>
+      </div>
     </section>
 
-    <section aria-labelledby="projects">
-      <h2 id="projects">Projects</h2>
+    <section id="work" aria-labelledby="work-h">
+      <div class="section-head">
+        <h2 id="work-h">Selected work</h2>
+        <p class="hint">Click one to run it.</p>
+      </div>
 
-      <article>
-        <div class="row">
-          <h3><a href="https://github.com/sohanjavali/AutoPod-secure">AutoPod</a></h3>
-          <span class="when">2025</span>
+      <details class="run">
+        <summary>
+          <span class="idx">01</span>
+          <span class="head">
+            <span class="name">LaReg</span>
+            <span class="meta">Regulatory Research Intern, Summer 2026</span>
+            <span class="one">An LLM pipeline that turns energy-project dockets into structured records, built with AI agents working in parallel.</span>
+          </span>
+          <span class="go" aria-hidden="true">run</span>
+        </summary>
+        <div class="panel">
+          <ol class="log" aria-hidden="true">
+            <li class="cmd" data-at="0">$ run lareg</li>
+            <li data-at="150" data-done="700"><span class="st"></span><b>retrieval</b> pull filings from Postgres and S3</li>
+            <li data-at="150" data-done="1000"><span class="st"></span><b>ocr</b> read scanned pages with Textract</li>
+            <li data-at="150" data-done="1250"><span class="st"></span><b>extract</b> fill the record with Gemini</li>
+            <li data-at="150" data-done="1500"><span class="st"></span><b>guards</b> check ownership against the source</li>
+            <li class="out" data-at="1650">merged. expanding</li>
+          </ol>
+          <div class="body">
+            <p>State utility commissions keep dockets, the case files for proposed energy projects like solar farms and transmission lines. Companies file PDFs into them, and LaReg sells the structured data buried in those PDFs. I rebuilt the pipeline that gets it out.</p>
+            <figure class="flow" aria-label="Pipeline: docket, Postgres lookup, PDFs from S3, Textract OCR, Gemini extraction, ownership checks, cited record">
+              <span>docket</span><span>Postgres</span><span>S3 PDFs</span><span>Textract OCR</span><span>Gemini</span><span>ownership checks</span><span class="end">cited record</span>
+            </figure>
+            <p>Every field in the record cites the page it came from. The field I spent the most time on was ownership. The model kept naming the applicant as the owner, so I added deterministic checks after extraction that blank the answer unless the cited text actually says who owns the project. I also retrained the BERT classifier that sorts each project into a subcategory.</p>
+            <p>The other half of the job was how the work got done. I ran several AI coding agents at once, each on its own piece of the pipeline, inside guardrails I set: read-only access to production data, outputs could only be added to and never overwritten, and every claim had to cite a docket number.</p>
+            <figure class="flow fork" aria-label="How I worked: I scoped tasks, agents ran in parallel, I reviewed what came back, then shipped">
+              <span>I scope tasks</span>
+              <span class="stack-of"><span>agent</span><span>agent</span><span>agent</span></span>
+              <span>I review</span><span class="end">ship</span>
+            </figure>
+            <p class="tags">Python · Gemini · AWS S3 · Textract · PostgreSQL · PyTorch · Hugging Face</p>
+          </div>
         </div>
-        <p>Type a topic, get back a finished podcast episode. Claude researches the topic and writes a script for multiple hosts, and every Claude call has to answer in a fixed JSON schema, so the output is always something the code can parse. Each line of the script goes to Cartesia's text-to-speech API, the audio gets stitched into one MP3, and the episode is saved to Supabase so you can play your library back later.</p>
-        <p class="stack">Next.js, React, TypeScript, Node, Express, Supabase, Claude API, Cartesia</p>
-      </article>
+      </details>
+
+      <details class="run">
+        <summary>
+          <span class="idx">02</span>
+          <span class="head">
+            <span class="name">AutoPod</span>
+            <span class="meta">Personal project, 2025</span>
+            <span class="one">Type a topic, get back a finished podcast episode.</span>
+          </span>
+          <span class="go" aria-hidden="true">run</span>
+        </summary>
+        <div class="panel">
+          <ol class="log" aria-hidden="true">
+            <li class="cmd" data-at="0">$ run autopod "why bridges sway"</li>
+            <li data-at="150" data-done="450"><span class="st"></span><b>validate</b> is the topic safe and doable</li>
+            <li data-at="450" data-done="750"><span class="st"></span><b>research</b> Claude gathers structured notes</li>
+            <li data-at="750" data-done="1050"><span class="st"></span><b>script</b> Claude writes it for multiple hosts</li>
+            <li data-at="1050" data-done="1350"><span class="st"></span><b>voice</b> Cartesia reads every line</li>
+            <li data-at="1350" data-done="1550"><span class="st"></span><b>save</b> one MP3 to Supabase</li>
+            <li class="out" data-at="1650">episode ready. expanding</li>
+          </ol>
+          <div class="body">
+            <p>Claude researches the topic and writes a script for multiple hosts. Every Claude call has to answer in a fixed JSON schema, so the output is always something the code can parse and the pipeline can't break on a weird response.</p>
+            <figure class="flow" aria-label="Pipeline: topic, Claude validates, Claude researches, Claude writes script, Cartesia speaks each line, MP3 saved to Supabase">
+              <span>topic</span><span>Claude: validate</span><span>Claude: research</span><span>Claude: script</span><span>Cartesia TTS</span><span class="end">MP3 in Supabase</span>
+            </figure>
+            <p>Each line of the script goes to Cartesia's text-to-speech API, the audio gets stitched into one MP3, and the episode is saved to Supabase so you can play your library back later.</p>
+            <p class="tags">Next.js · React · TypeScript · Node · Express · Supabase · Claude API · Cartesia</p>
+            <p><a href="https://github.com/sohanjavali/AutoPod-secure">Code on GitHub</a></p>
+          </div>
+        </div>
+      </details>
     </section>
 
-    <section aria-labelledby="contact">
-      <h2 id="contact">Contact</h2>
-      <p>Email is the fastest way to reach me: <a href="mailto:sohanjavali@gmail.com">sohanjavali@gmail.com</a>. I'm also on <a href="https://www.linkedin.com/in/sohan-javali">LinkedIn</a> and <a href="https://github.com/sohanjavali">GitHub</a>.</p>
+    <section aria-labelledby="earlier-h">
+      <div class="section-head">
+        <h2 id="earlier-h">Earlier</h2>
+      </div>
+      <ul class="earlier">
+        <li>
+          <span class="name">Avesha</span>
+          <span class="meta">Technical Team Intern, Fall 2024</span>
+          <span class="one">Unit tests for an AI-driven Kubernetes pod autoscaler, plus REST endpoint testing in Postman.</span>
+        </li>
+        <li>
+          <span class="name">Work Based Learning Alliance</span>
+          <span class="meta">Technology Specialist Intern, Winter 2025</span>
+          <span class="one">Helped a local vocal coaching business grow its online programs using automation and AI tools.</span>
+        </li>
+        <li>
+          <span class="name">Holliston High School</span>
+          <span class="meta">Teaching Assistant, AP Computer Science, 2024 to 2025</span>
+          <span class="one">Taught Java and Python fundamentals and wrote the programming evaluations.</span>
+        </li>
+      </ul>
+    </section>
+
+    <section class="contact" aria-labelledby="contact-h">
+      <h2 id="contact-h">Say hi</h2>
+      <p class="big"><a href="mailto:sohanjavali@gmail.com">sohanjavali@gmail.com</a></p>
+      <p>Email is the fastest way to reach me. I'm also on <a href="https://www.linkedin.com/in/sohan-javali">LinkedIn</a> and <a href="https://github.com/sohanjavali">GitHub</a>.</p>
     </section>
 
     <footer>
-      <p>University of Waterloo, Bachelor of Computer Science. From Holliston, Massachusetts. Eagle Scout.</p>
+      <p>University of Waterloo, Bachelor of Computer Science. From Holliston, Massachusetts.</p>
     </footer>
   </main>
 </body>
