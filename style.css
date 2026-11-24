@@ -1,0 +1,172 @@
+/* Colors live in variables so dark mode only has to swap the values. */
+:root {
+  --bg: #fbfaf7;
+  --text: #1d1d1b;
+  --muted: #6b6a64;
+  --rule: #e4e1d9;
+  --accent: #2f5d50;
+}
+
+/* Follows the visitor's OS setting. No toggle, no JavaScript. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141513;
+    --text: #e8e6e1;
+    --muted: #9a988f;
+    --rule: #2c2d2a;
+    --accent: #8cc2b0;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  /* System fonts: nothing to download, so the page renders instantly. */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+/* One narrow column. ~65 characters per line is the comfortable reading width. */
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem 3rem;
+}
+
+h1,
+h2,
+h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: normal;
+  line-height: 1.25;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.4rem;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 0.8rem;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 1.75rem;
+}
+
+h3 {
+  font-size: 1.3rem;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.intro {
+  margin-bottom: 3.5rem;
+}
+
+.intro h1 {
+  margin-bottom: 1.25rem;
+}
+
+.lede {
+  font-size: 1.2rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1.5rem;
+}
+
+section {
+  margin-bottom: 3rem;
+}
+
+article {
+  margin-bottom: 2.25rem;
+}
+
+article:last-child {
+  margin-bottom: 0;
+}
+
+/* Name on the left, date on the right; wraps under on narrow phones. */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0 1rem;
+}
+
+.when,
+.role,
+.stack {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.role {
+  margin: 0.15rem 0 0.75rem;
+}
+
+.stack {
+  margin-top: -0.25rem;
+}
+
+footer {
+  border-top: 1px solid var(--rule);
+  padding-top: 1.25rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 30rem) {
+  main {
+    padding-top: 3rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Entries without a role line (projects) still need room under the heading. */
+.row + p:not(.role) {
+  margin-top: 0.6rem;
+}
