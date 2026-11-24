@@ -247,6 +247,8 @@ summary:hover .go { background: var(--accent); color: #fff; }
 .flow li.par { display: flex; gap: 0.35rem; border-style: dashed; }
 .flow li.par span { flex: 1; text-align: center; border: 1px solid var(--line); border-radius: 4px; padding: 0.1rem 0; }
 
+.earlier-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dim); margin-top: 3rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--line); }
+
 /* =========================================================
    Experience rows
    ========================================================= */

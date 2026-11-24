@@ -30,8 +30,8 @@
   <header class="nav">
     <a class="mark" href="#top" aria-label="Back to top">SJ<span>_</span></a>
     <nav aria-label="Sections">
-      <a href="#work">Work</a>
       <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -50,7 +50,7 @@
         <div class="hero-foot">
           <p class="lede">I build software that turns messy real-world data, like scanned filings and satellite images, into something structured and usable.</p>
           <div class="cta">
-            <a class="btn" href="#work">See the work <span aria-hidden="true">↓</span></a>
+            <a class="btn" href="#experience">See the work <span aria-hidden="true">↓</span></a>
             <a class="btn ghost" href="mailto:sohanjavali@gmail.com" data-email>Email me</a>
           </div>
         </div>
@@ -58,18 +58,18 @@
       </div>
     </section>
 
-    <!-- ============ 01 WORK ============ -->
-    <section id="work" class="block wrap">
+    <!-- ============ 01 EXPERIENCE ============ -->
+    <section id="experience" class="block wrap">
       <div class="block-head">
-        <p class="label mono" data-scramble>01 / Selected work</p>
-        <p class="caption">Things I've built and can walk you through end to end. Click one to run it.</p>
+        <p class="label mono" data-scramble>01 / Experience</p>
+        <p class="caption">Where I've done the work. Click LaReg to run it.</p>
       </div>
 
       <details class="run">
         <summary>
           <span class="idx mono">01</span>
           <span class="head">
-            <span class="tag mono">Co-op <i>/</i> LLM data pipeline</span>
+            <span class="tag mono">Regulatory Research Intern <i>/</i> May to Aug 2026 <i>/</i> Boston</span>
             <span class="name">LaReg</span>
             <span class="one">An LLM pipeline that turns energy-project dockets into structured records where every field cites its source. Built with AI agents working in parallel.</span>
           </span>
@@ -124,6 +124,95 @@
         </div>
       </details>
 
+      <p class="earlier-label mono">earlier</p>
+      <ul class="jobs">
+        <li class="reveal">
+          <div><p class="co">Avesha</p><p class="when mono">Aug to Oct 2024</p></div>
+          <div><p class="role">Technical Team Intern</p><p>Wrote unit tests for an AI-driven Kubernetes pod autoscaler, covering its scaling logic and edge cases, and tested its REST endpoints with Postman.</p></div>
+          <p class="where mono">Boston, MA</p>
+        </li>
+        <li class="reveal">
+          <div><p class="co">Work Based Learning Alliance</p><p class="when mono">Jan to Apr 2025</p></div>
+          <div><p class="role">Technology Specialist Intern</p><p>Worked with a cross-functional team to help a local vocal coaching business grow its online programs using automation and AI tools.</p></div>
+          <p class="where mono">Boston, MA</p>
+        </li>
+        <li class="reveal">
+          <div><p class="co">Holliston High School</p><p class="when mono">Sep 2024 to May 2025</p></div>
+          <div><p class="role">Teaching Assistant, AP Computer Science A and Principles</p><p>Taught Java and Python fundamentals, helped students through labs and coding assessments, and wrote programming evaluations.</p></div>
+          <p class="where mono">Holliston, MA</p>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ============ 02 PROJECTS ============ -->
+    <section id="projects" class="block wrap">
+      <div class="block-head">
+        <p class="label mono" data-scramble>02 / Projects</p>
+        <p class="caption">Built on my own time, mostly the way I worked at LaReg: AI coding agents in parallel, each on one piece, with me setting the guardrails and deciding what ships. Click one to run it.</p>
+      </div>
+
+      <details class="run">
+        <summary>
+          <span class="idx mono">01</span>
+          <span class="head">
+            <span class="tag mono">Personal system <i>/</i> Claude Code tooling</span>
+            <span class="name">Second brain</span>
+            <span class="one">A plain-text vault of my projects, decisions, and beliefs that Claude Code loads at the start of every session, so it never starts cold.</span>
+          </span>
+          <span class="go mono" aria-hidden="true">run</span>
+        </summary>
+        <div class="panel">
+          <div class="panel-main">
+            <ol class="log mono" aria-hidden="true">
+              <li class="cmd" data-at="0">$ run vault</li>
+              <li data-at="150" data-done="400"><span class="st"></span><b>context</b> load where I left off</li>
+              <li data-at="400" data-done="700"><span class="st"></span><b>capture</b> new thought into the inbox</li>
+              <li data-at="700" data-done="1000"><span class="st"></span><b>route</b> one note, every file it belongs in</li>
+              <li data-at="1000" data-done="1250"><span class="st"></span><b>lint</b> check every edit</li>
+              <li data-at="1250" data-done="1500"><span class="st"></span><b>commit</b> changelog + GitHub backup</li>
+              <li class="out" data-at="1650">vault in order. expanding</li>
+            </ol>
+            <div class="body">
+              <h3 class="sub mono">Why I built it</h3>
+              <p>Every new AI chat starts cold. I wanted Claude to pick up where I actually am: what I'm working on, what I've decided and why, and what I said I wanted. So all of it lives in one Obsidian vault of plain Markdown files, covering projects, decisions, beliefs, people, and the stories behind them. It's part notebook, part operating system.</p>
+
+              <h3 class="sub mono">How I use it</h3>
+              <p>When I open a session, a hook loads my current state so Claude isn't guessing. When something happens, like a decision or a new idea, I dump it in and a capture skill asks follow-up questions before filing it in an inbox. A routing skill then splits that one note across every file it belongs in, and nothing gets written until I approve it. When a thread gets long, a handoff skill saves where I am so a fresh session can keep going.</p>
+
+              <h3 class="sub mono">More than notes</h3>
+              <p>Decisions are logged with the reasoning and what I was optimizing for, so I can look back and see what repeats. Beliefs are never overwritten: when my thinking changes, the old version stays and the change gets a dated entry. That history is what lets Claude call it out when what I'm doing drifts from what I said I wanted.</p>
+
+              <h3 class="sub mono">What keeps it in order</h3>
+              <p>Hooks lint every edit as it happens and block writes to the archive. Every approved change is its own git commit, logged to a changelog and synced to a private GitHub backup automatically. Once a week a cloud job reads that backup and writes me a digest of what changed, what got done, and what's next, even when my laptop is off.</p>
+
+              <p class="tags mono">Claude Code skills and hooks · Obsidian · Markdown · Python · Bash · Git</p>
+            </div>
+          </div>
+          <aside class="diagram" aria-label="How a note moves through the vault">
+            <p class="diagram-title mono">how a note moves</p>
+            <ol class="flow mono">
+              <li>capture + follow-up questions</li>
+              <li>inbox</li>
+              <li>route to every file it belongs in</li>
+              <li>I approve the write</li>
+              <li>lint on write</li>
+              <li>commit + changelog</li>
+              <li class="end">auto-sync to GitHub</li>
+            </ol>
+            <p class="diagram-title mono">every session</p>
+            <ol class="flow mono">
+              <li>hook loads current state</li>
+              <li>work with full context</li>
+              <li class="end">handoff saves state</li>
+            </ol>
+            <p class="diagram-title mono">every sunday</p>
+            <ol class="flow mono">
+              <li>cloud job reads the backup</li>
+              <li class="end">weekly digest</li>
+            </ol>
+          </aside>
+        </div>
+      </details>
       <details class="run">
         <summary>
           <span class="idx mono">02</span>
@@ -224,7 +313,6 @@
           </aside>
         </div>
       </details>
-
       <details class="run">
         <summary>
           <span class="idx mono">04</span>
@@ -247,6 +335,9 @@
               <li class="out" data-at="1650">batch done. expanding</li>
             </ol>
             <div class="body">
+              <h3 class="sub mono">Why it exists</h3>
+              <p>Cold outreach is mostly repetition: finding the right people, writing a first line that doesn't sound like a template, and remembering to follow up. The kit automates the repetition and leaves the judgment with a person.</p>
+
               <h3 class="sub mono">What it does</h3>
               <p>It finds leads, scores them, and drafts each email in the sender's own voice. Nothing sends until a person approves it. Approved emails go out on a fixed follow-up schedule with daily send caps, so a mailbox never looks like spam, and replies get triaged into a weekly report.</p>
 
@@ -254,7 +345,7 @@
               <p>Each job is its own Claude Code skill: onboarding, the daily batch, the approval sweep, follow-ups, reply triage, and the weekly report. The skills call Python scripts for the parts that should be deterministic, and a test suite covers those scripts.</p>
 
               <h3 class="sub mono">Where it is now</h3>
-              <p>It's being packaged and sold as a product, with a done-for-you setup for people who'd rather not install it themselves.</p>
+              <p>It's being packaged and sold as a product: a free playbook page that explains the approach, the kit itself, and a done-for-you setup call for people who'd rather not install it themselves.</p>
 
               <p class="tags mono">Claude Code skills · Python · Apollo · Gmail</p>
             </div>
@@ -273,82 +364,6 @@
           </aside>
         </div>
       </details>
-
-      <details class="run">
-        <summary>
-          <span class="idx mono">05</span>
-          <span class="head">
-            <span class="tag mono">Personal system <i>/</i> Tooling</span>
-            <span class="name">Second brain</span>
-            <span class="one">A plain-text vault of my notes and decisions that Claude Code reads, maintains, and audits on its own.</span>
-          </span>
-          <span class="go mono" aria-hidden="true">run</span>
-        </summary>
-        <div class="panel">
-          <div class="panel-main">
-            <ol class="log mono" aria-hidden="true">
-              <li class="cmd" data-at="0">$ run vault</li>
-              <li data-at="150" data-done="400"><span class="st"></span><b>capture</b> new note into the inbox</li>
-              <li data-at="400" data-done="700"><span class="st"></span><b>route</b> split it across the right files</li>
-              <li data-at="700" data-done="950"><span class="st"></span><b>lint</b> check every edit</li>
-              <li data-at="950" data-done="1200"><span class="st"></span><b>commit</b> log it to the changelog</li>
-              <li data-at="1200" data-done="1450"><span class="st"></span><b>backup</b> push to GitHub</li>
-              <li class="out" data-at="1600">vault in order. expanding</li>
-            </ol>
-            <div class="body">
-              <h3 class="sub mono">What it is</h3>
-              <p>My notes, decisions, and projects live in a plain-text Obsidian vault that Claude Code can read and maintain. I wrote custom skills to capture new notes, route them to the right place, and trace how my thinking on something has changed over time.</p>
-
-              <h3 class="sub mono">What keeps it in order</h3>
-              <p>Hooks lint every edit as it happens and log every commit to a changelog, and each commit is pushed to a private GitHub backup automatically. A weekly cloud job audits the whole vault for broken links and stale notes, even when my laptop is off.</p>
-
-              <p class="tags mono">Claude Code · Obsidian · Markdown · Bash hooks · Git</p>
-            </div>
-          </div>
-          <aside class="diagram" aria-label="Vault flow">
-            <p class="diagram-title mono">note lifecycle</p>
-            <ol class="flow mono">
-              <li>capture</li>
-              <li>inbox</li>
-              <li>route to the right files</li>
-              <li>lint on every write</li>
-              <li>commit + changelog</li>
-              <li>auto-push backup</li>
-              <li class="end">weekly cloud audit</li>
-            </ol>
-          </aside>
-        </div>
-      </details>
-    </section>
-
-    <!-- ============ 02 EXPERIENCE ============ -->
-    <section id="experience" class="block wrap">
-      <div class="block-head">
-        <p class="label mono" data-scramble>02 / Experience</p>
-        <p class="caption">Where I've done the work.</p>
-      </div>
-      <ul class="jobs">
-        <li class="reveal">
-          <div><p class="co">LaReg Corp.</p><p class="when mono">May to Aug 2026</p></div>
-          <div><p class="role">Regulatory Research Intern</p><p>Rebuilt the LLM pipeline that extracts structured data from regulatory dockets, retrained a BERT classifier, and ran the agentic workflow that built most of it. Details above.</p></div>
-          <p class="where mono">Boston, MA</p>
-        </li>
-        <li class="reveal">
-          <div><p class="co">Avesha</p><p class="when mono">Aug to Oct 2024</p></div>
-          <div><p class="role">Technical Team Intern</p><p>Wrote unit tests for an AI-driven Kubernetes pod autoscaler, covering its scaling logic and edge cases, and tested its REST endpoints with Postman.</p></div>
-          <p class="where mono">Boston, MA</p>
-        </li>
-        <li class="reveal">
-          <div><p class="co">Work Based Learning Alliance</p><p class="when mono">Jan to Apr 2025</p></div>
-          <div><p class="role">Technology Specialist Intern</p><p>Worked with a cross-functional team to help a local vocal coaching business grow its online programs using automation and AI tools.</p></div>
-          <p class="where mono">Boston, MA</p>
-        </li>
-        <li class="reveal">
-          <div><p class="co">Holliston High School</p><p class="when mono">Sep 2024 to May 2025</p></div>
-          <div><p class="role">Teaching Assistant, AP Computer Science A and Principles</p><p>Taught Java and Python fundamentals, helped students through labs and coding assessments, and wrote programming evaluations.</p></div>
-          <p class="where mono">Holliston, MA</p>
-        </li>
-      </ul>
     </section>
 
     <!-- ============ 04 TOOLKIT ============ -->
