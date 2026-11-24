@@ -144,12 +144,12 @@ h1 {
    ========================================================= */
 .block { padding-top: 7rem; padding-bottom: 1rem; }
 .block-head {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 3rem; align-items: baseline;
+  display: flex; flex-direction: column; gap: 0.5rem;   /* label, then its caption right under it, same left edge every section */
   padding-bottom: 1.25rem; margin-bottom: 0.5rem;
   border-bottom: 1px solid var(--line);
 }
 .label { font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
-.caption { color: var(--muted); max-width: 26rem; }
+.caption { color: var(--muted); font-size: 1.05rem; max-width: 34rem; }
 
 /* =========================================================
    Project rows: native <details> so they open without JS
@@ -347,7 +347,6 @@ summary:hover .go { background: var(--accent); color: #fff; }
   h1 { font-size: calc((100vw - 2 * var(--gutter)) / 2.95); line-height: 0.88; }
   h1 span { display: block; }
   .spawn-hint { display: none; }
-  .block-head { grid-template-columns: 1fr; }
   summary { grid-template-columns: 1fr auto; gap: 1rem; padding: 2rem 0; }
   .idx { display: none; }
   .kits { grid-template-columns: 1fr; gap: 1.75rem; }
