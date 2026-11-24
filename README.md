@@ -4,7 +4,7 @@ My personal site. Plain HTML, CSS, and a little vanilla JavaScript. No framework
 
 ## Files
 
-`index.html` holds all the content. `style.css` holds all the styling, including dark mode (follows the system setting via `prefers-color-scheme`). `main.js` draws the agent grid behind the hero, decodes the section labels, fades sections in, and plays the project runs. It is all decoration; the page works without it.
+`index.html` holds all the content. `style.css` holds all the styling, including dark mode (follows the system setting via `prefers-color-scheme`). `main.js` draws the moving paths behind the hero, runs the auto-hiding scrollbar, decodes the section labels, fades sections in, and plays the project runs. It is all decoration; the page works without it.
 
 ## Updating it
 
@@ -24,4 +24,4 @@ Vercel watches this repo's `main` branch and redeploys on every push, usually in
 
 ## Rules for the content
 
-No metrics or numbers (those stay on the resume). No m-dashes. Every line has to be something I can explain in an interview.
+Numbers only when they're real (from the resume or measured). No m-dashes. Every line has to be something I can explain in an interview.

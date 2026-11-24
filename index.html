@@ -28,7 +28,7 @@
 </head>
 <body>
   <header class="nav">
-    <a class="mark" href="#top" aria-label="Back to top">SJ<span>_</span></a>
+    <a class="mark" href="#top" aria-label="Back to top">SJ</a>
     <nav aria-label="Sections">
       <a href="#work">Work</a>
       <a href="#experience">Experience</a>
@@ -36,13 +36,12 @@
       <a href="#contact">Contact</a>
     </nav>
     <p class="status"><span class="dot" aria-hidden="true"></span>Open to Spring 2027 co-op</p>
-    <span class="progress" aria-hidden="true"></span>
   </header>
 
   <main id="top">
     <!-- ============ HERO ============ -->
     <section class="hero">
-      <!-- Decorative background: agents moving across a grid in parallel. Drawn by main.js. -->
+      <!-- Decorative background: lines tracing paths behind the name. Drawn by main.js. -->
       <canvas class="grid" aria-hidden="true"></canvas>
 
       <div class="hero-inner wrap">
@@ -55,7 +54,7 @@
             <a class="btn ghost" href="mailto:sohanjavali@gmail.com" data-email>Email me</a>
           </div>
         </div>
-        <p class="spawn-hint mono" aria-hidden="true">click the grid to spawn an agent</p>
+        <p class="spawn-hint mono" aria-hidden="true">click to start a new path</p>
       </div>
     </section>
 
@@ -63,7 +62,7 @@
     <section id="work" class="block wrap">
       <div class="block-head">
         <p class="label mono" data-scramble>01 / Selected work</p>
-        <p class="caption">My co-op and things I've built. Most were built with an agent loop: a main agent runs subagents in parallel, a reviewer checks their work, and they fix until it passes. Click one to run it.</p>
+        <p class="caption">My co-op and things I've built. Click one to run it.</p>
       </div>
 
       <details class="run">
@@ -72,14 +71,13 @@
           <span class="head">
             <span class="tag mono">Co-op <i>/</i> LLM data pipeline</span>
             <span class="name">LaReg</span>
-            <span class="one">Instead of people reading every docket by hand to pull out the fields, an LLM pipeline does it, and every field cites its source.</span>
+            <span class="one">An LLM pipeline that reads regulatory dockets so people don't have to, pulling 40+ fields from 1,100+ dockets with a source for every field.</span>
           </span>
           <span class="go mono" aria-hidden="true">run</span>
         </summary>
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
-              <li class="cmd" data-at="0">$ run lareg --docket</li>
               <li data-at="150" data-done="500"><span class="st"></span><b>retrieve</b> find filings in Postgres, pull PDFs from S3</li>
               <li data-at="500" data-done="850"><span class="st"></span><b>ocr</b> Textract on scanned pages</li>
               <li data-at="850" data-done="1100"><span class="st"></span><b>budget</b> whole filings only</li>
@@ -92,13 +90,11 @@
               <p>Utility commissions keep dockets, the case files for proposed solar farms and transmission lines. Companies file PDFs into them, a lot of them scanned, and LaReg sells the data buried inside. The old pipeline fed the model a fixed handful of PDFs per docket, which often meant it only saw half a filing.</p>
 
               <h3 class="sub mono">What I built</h3>
-              <p>Given a docket, the pipeline finds its filings in Postgres, pulls the PDFs from S3, and OCRs scanned pages with Textract. Filings go to Gemini whole or not at all, inside a token budget, and every field in the record carries the file and page it came from. A response that won't parse counts as a failure, never a silent blank.</p>
+              <p>Given a docket, the pipeline finds its filings in Postgres, pulls the PDFs from S3, and OCRs scanned pages with Textract. Filings go to Gemini whole or not at all, inside a token budget, and every field in the record carries the file and page it came from. A response that won't parse gets flagged as a failure, so a field can't quietly go missing.</p>
 
               <h3 class="sub mono">The hard part</h3>
-              <p>Ownership. The model kept naming the applicant as the project's owner, but the company filing the paperwork often isn't the one that owns the project. So I added deterministic checks after extraction: unless the cited text actually says who owns it, the field gets blanked. A blank someone can fill in beats a confident wrong answer.</p>
-              <p>The other fix was in the BERT classifier that sorts projects into subcategories. Some classes had too few examples to learn from, so I retrained it on recent data to fill them out.</p>
-
-              <p class="aside">Built with my agent loop, inside guardrails I set: read-only production data, outputs that could only be added to, and every claim cited to a docket.</p>
+              <p>Ownership. The model kept naming the applicant as the project's owner, but the company filing the paperwork often isn't the one that owns the project. So I added deterministic checks after extraction: unless the cited text actually says who owns it, the field gets blanked. A blank someone can fill in beats a confident wrong answer. Ownership accuracy went from 35% to 90%.</p>
+              <p>The other fix was in the BERT classifier that sorts projects into subcategories. Some classes had too few examples to learn from, so I retrained it on recent data to fill them out. Macro-F1 went from 72% to 84%.</p>
 
               <p class="tags mono">Python · Gemini · AWS S3 · Textract · PostgreSQL · PyTorch · Hugging Face</p>
             </div>
@@ -130,7 +126,6 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
-              <li class="cmd" data-at="0">$ run vault</li>
               <li data-at="150" data-done="400"><span class="st"></span><b>context</b> load where I left off</li>
               <li data-at="400" data-done="700"><span class="st"></span><b>capture</b> new thought into the inbox</li>
               <li data-at="700" data-done="1000"><span class="st"></span><b>route</b> one note, every file it belongs in</li>
@@ -143,7 +138,7 @@
               <p>Part diary, part operating system. It records how I think, what happens day to day, the decisions I make, and how my beliefs change. Claude reads it every session, so it knows where I am and calls me out when I drift from what I said I wanted. The point is staying pointed at my goals and getting better as a person.</p>
 
               <h3 class="sub mono">How I use it</h3>
-              <p>I dump in a thought, a capture skill asks follow-up questions, and a routing skill files it everywhere it belongs once I approve. Beliefs are never overwritten, so the old versions stay as evidence.</p>
+              <p>I use it every day. It holds 270+ notes, runs on 13 skills I wrote, and has 300+ commits since May. I dump in a thought, a capture skill asks follow-up questions, and a routing skill files it everywhere it belongs once I approve. Beliefs are never overwritten, so the old versions stay as evidence.</p>
 
               <h3 class="sub mono">What keeps it in order</h3>
               <p>Hooks lint every edit, every change is its own commit synced to GitHub, and a weekly cloud job sends me a digest even when my laptop is off.</p>
@@ -181,7 +176,6 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
-              <li class="cmd" data-at="0">$ run autopod "why bridges sway"</li>
               <li data-at="150" data-done="450"><span class="st"></span><b>validate</b> is the topic safe and doable</li>
               <li data-at="450" data-done="750"><span class="st"></span><b>research</b> Claude gathers structured notes</li>
               <li data-at="750" data-done="1050"><span class="st"></span><b>script</b> Claude writes it for multiple hosts</li>
@@ -226,7 +220,6 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
-              <li class="cmd" data-at="0">$ run occupancy --country US</li>
               <li data-at="150" data-done="400"><span class="st"></span><b>sites</b> pull malls from OpenStreetMap</li>
               <li data-at="400" data-done="650"><span class="st"></span><b>sample</b> same weekday, every month</li>
               <li data-at="650" data-done="950"><span class="st"></span><b>frames</b> nearest clear satellite pass</li>
@@ -271,7 +264,6 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
-              <li class="cmd" data-at="0">$ run outbound --daily</li>
               <li data-at="150" data-done="450"><span class="st"></span><b>leads</b> find and score new leads</li>
               <li data-at="450" data-done="800"><span class="st"></span><b>draft</b> write each email in your voice</li>
               <li data-at="800" data-done="1100"><span class="st"></span><b>approve</b> hold for a human yes</li>
@@ -281,7 +273,7 @@
             </ol>
             <div class="body">
               <h3 class="sub mono">What it does</h3>
-              <p>Finds leads, scores them, and drafts each email in the sender's voice. Nothing sends until a person approves it. Then it follows up on schedule under daily caps and triages the replies.</p>
+              <p>Finds leads, scores them, and drafts each email in the sender's voice. Nothing sends until a person approves it. Then it follows up on schedule under daily caps and triages the replies. Early runs got a 10% reply rate and 4 meetings booked per 100 emails.</p>
 
               <h3 class="sub mono">How it's built</h3>
               <p>Each job is its own Claude Code skill, backed by Python scripts and tests. It's sold as a product with an optional done-for-you setup.</p>
@@ -313,7 +305,7 @@
       <ul class="jobs">
         <li class="reveal">
           <div><p class="co">LaReg Corp.</p><p class="when mono">May to Aug 2026</p></div>
-          <div><p class="role">Regulatory Research Intern</p><p>Rebuilt the LLM pipeline that pulls structured data out of regulatory dockets and retrained a BERT classifier. More in Selected work above.</p></div>
+          <div><p class="role">Regulatory Research Intern</p><p>Rebuilt the LLM pipeline that pulls 40+ fields out of 1,100+ regulatory dockets, raised ownership accuracy from 35% to 90%, and retrained a BERT classifier from 72% to 84% macro-F1. More in Selected work above.</p></div>
           <p class="where mono">Boston, MA</p>
         </li>
         <li class="reveal">
