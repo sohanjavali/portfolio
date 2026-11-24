@@ -30,8 +30,8 @@
   <header class="nav">
     <a class="mark" href="#top" aria-label="Back to top">SJ<span>_</span></a>
     <nav aria-label="Sections">
+      <a href="#work">Work</a>
       <a href="#experience">Experience</a>
-      <a href="#projects">Projects</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
     </nav>
@@ -50,7 +50,7 @@
         <div class="hero-foot">
           <p class="lede">I build software that turns messy real-world data, like scanned filings and satellite images, into something structured and usable.</p>
           <div class="cta">
-            <a class="btn" href="#experience">See the work <span aria-hidden="true">↓</span></a>
+            <a class="btn" href="#work">See the work <span aria-hidden="true">↓</span></a>
             <a class="btn ghost" href="mailto:sohanjavali@gmail.com" data-email>Email me</a>
           </div>
         </div>
@@ -58,18 +58,18 @@
       </div>
     </section>
 
-    <!-- ============ 01 EXPERIENCE ============ -->
-    <section id="experience" class="block wrap">
+    <!-- ============ 01 WORK ============ -->
+    <section id="work" class="block wrap">
       <div class="block-head">
-        <p class="label mono" data-scramble>01 / Experience</p>
-        <p class="caption">Where I've done the work. Click LaReg to run it.</p>
+        <p class="label mono" data-scramble>01 / Selected work</p>
+        <p class="caption">My co-op and the things I've built on my own. Most of them I built by running AI coding agents in parallel, with me setting the guardrails and deciding what ships. Click one to run it.</p>
       </div>
 
       <details class="run">
         <summary>
           <span class="idx mono">01</span>
           <span class="head">
-            <span class="tag mono">Regulatory Research Intern <i>/</i> May to Aug 2026 <i>/</i> Boston</span>
+            <span class="tag mono">Co-op <i>/</i> LLM data pipeline</span>
             <span class="name">LaReg</span>
             <span class="one">An LLM pipeline that turns energy-project dockets into structured records where every field cites its source. Built with AI agents working in parallel.</span>
           </span>
@@ -123,41 +123,13 @@
           </aside>
         </div>
       </details>
-
-      <p class="earlier-label mono">earlier</p>
-      <ul class="jobs">
-        <li class="reveal">
-          <div><p class="co">Avesha</p><p class="when mono">Aug to Oct 2024</p></div>
-          <div><p class="role">Technical Team Intern</p><p>Wrote unit tests for an AI-driven Kubernetes pod autoscaler, covering its scaling logic and edge cases, and tested its REST endpoints with Postman.</p></div>
-          <p class="where mono">Boston, MA</p>
-        </li>
-        <li class="reveal">
-          <div><p class="co">Work Based Learning Alliance</p><p class="when mono">Jan to Apr 2025</p></div>
-          <div><p class="role">Technology Specialist Intern</p><p>Worked with a cross-functional team to help a local vocal coaching business grow its online programs using automation and AI tools.</p></div>
-          <p class="where mono">Boston, MA</p>
-        </li>
-        <li class="reveal">
-          <div><p class="co">Holliston High School</p><p class="when mono">Sep 2024 to May 2025</p></div>
-          <div><p class="role">Teaching Assistant, AP Computer Science A and Principles</p><p>Taught Java and Python fundamentals, helped students through labs and coding assessments, and wrote programming evaluations.</p></div>
-          <p class="where mono">Holliston, MA</p>
-        </li>
-      </ul>
-    </section>
-
-    <!-- ============ 02 PROJECTS ============ -->
-    <section id="projects" class="block wrap">
-      <div class="block-head">
-        <p class="label mono" data-scramble>02 / Projects</p>
-        <p class="caption">Built on my own time, mostly the way I worked at LaReg: AI coding agents in parallel, each on one piece, with me setting the guardrails and deciding what ships. Click one to run it.</p>
-      </div>
-
       <details class="run">
         <summary>
-          <span class="idx mono">01</span>
+          <span class="idx mono">02</span>
           <span class="head">
             <span class="tag mono">Personal system <i>/</i> Claude Code tooling</span>
             <span class="name">Second brain</span>
-            <span class="one">A plain-text vault of my projects, decisions, and beliefs that Claude Code loads at the start of every session, so it never starts cold.</span>
+            <span class="one">Part diary, part operating system. A vault of my life and work that Claude Code reads every session, so it knows where I am and calls me out when I drift.</span>
           </span>
           <span class="go mono" aria-hidden="true">run</span>
         </summary>
@@ -174,13 +146,16 @@
             </ol>
             <div class="body">
               <h3 class="sub mono">Why I built it</h3>
-              <p>Every new AI chat starts cold. I wanted Claude to pick up where I actually am: what I'm working on, what I've decided and why, and what I said I wanted. So all of it lives in one Obsidian vault of plain Markdown files, covering projects, decisions, beliefs, people, and the stories behind them. It's part notebook, part operating system.</p>
+              <p>Every new AI chat starts cold, and I wanted one that actually knew me. So I built a place where Claude can pick up where I am: what I'm working on, what I've decided and why, and what I said I wanted. It all lives in one Obsidian vault of plain Markdown files.</p>
+
+              <h3 class="sub mono">What it's for</h3>
+              <p>It works a lot like a diary. It records how I think, what's going on in my life day to day, the decisions I make, the people around me, and how my beliefs change over time. Having all of that written down keeps me honest. When what I'm doing drifts from what I said I wanted, Claude calls it out. The point isn't just being more organized. It's staying pointed at my goals and getting better as a person.</p>
 
               <h3 class="sub mono">How I use it</h3>
               <p>When I open a session, a hook loads my current state so Claude isn't guessing. When something happens, like a decision or a new idea, I dump it in and a capture skill asks follow-up questions before filing it in an inbox. A routing skill then splits that one note across every file it belongs in, and nothing gets written until I approve it. When a thread gets long, a handoff skill saves where I am so a fresh session can keep going.</p>
 
-              <h3 class="sub mono">More than notes</h3>
-              <p>Decisions are logged with the reasoning and what I was optimizing for, so I can look back and see what repeats. Beliefs are never overwritten: when my thinking changes, the old version stays and the change gets a dated entry. That history is what lets Claude call it out when what I'm doing drifts from what I said I wanted.</p>
+              <h3 class="sub mono">How it remembers</h3>
+              <p>Decisions are logged with the reasoning and what I was optimizing for, so I can look back and see what repeats. Beliefs are never overwritten: when my thinking changes, the old version stays and the change gets a dated entry. That history is the evidence Claude uses when it pushes back.</p>
 
               <h3 class="sub mono">What keeps it in order</h3>
               <p>Hooks lint every edit as it happens and block writes to the archive. Every approved change is its own git commit, logged to a changelog and synced to a private GitHub backup automatically. Once a week a cloud job reads that backup and writes me a digest of what changed, what got done, and what's next, even when my laptop is off.</p>
@@ -215,7 +190,7 @@
       </details>
       <details class="run">
         <summary>
-          <span class="idx mono">02</span>
+          <span class="idx mono">03</span>
           <span class="head">
             <span class="tag mono">Project <i>/</i> Full stack</span>
             <span class="name">AutoPod</span>
@@ -265,7 +240,7 @@
       </details>
       <details class="run">
         <summary>
-          <span class="idx mono">03</span>
+          <span class="idx mono">04</span>
           <span class="head">
             <span class="tag mono">Research <i>/</i> Computer vision</span>
             <span class="name">Parking lot occupancy</span>
@@ -315,7 +290,7 @@
       </details>
       <details class="run">
         <summary>
-          <span class="idx mono">04</span>
+          <span class="idx mono">05</span>
           <span class="head">
             <span class="tag mono">Product <i>/</i> Claude Code</span>
             <span class="name">Outbound sales kit</span>
@@ -348,6 +323,7 @@
               <p>It's being packaged and sold as a product: a free playbook page that explains the approach, the kit itself, and a done-for-you setup call for people who'd rather not install it themselves.</p>
 
               <p class="tags mono">Claude Code skills · Python · Apollo · Gmail</p>
+              <p><a class="arrow-link" href="https://fate-satellite-ea1.notion.site/Win-More-Deals-With-Claude-The-Outbound-Playbook-387fbb12b48083faaf77010690b7a23e">Read the playbook</a></p>
             </div>
           </div>
           <aside class="diagram" aria-label="Outbound kit flow">
@@ -364,6 +340,36 @@
           </aside>
         </div>
       </details>
+    </section>
+
+    <!-- ============ 02 EXPERIENCE ============ -->
+    <section id="experience" class="block wrap">
+      <div class="block-head">
+        <p class="label mono" data-scramble>02 / Experience</p>
+        <p class="caption">Where I've done the work.</p>
+      </div>
+      <ul class="jobs">
+        <li class="reveal">
+          <div><p class="co">LaReg Corp.</p><p class="when mono">May to Aug 2026</p></div>
+          <div><p class="role">Regulatory Research Intern</p><p>Rebuilt the LLM pipeline that pulls structured data out of regulatory dockets and retrained a BERT classifier. More in Selected work above.</p></div>
+          <p class="where mono">Boston, MA</p>
+        </li>
+        <li class="reveal">
+          <div><p class="co">Avesha</p><p class="when mono">Aug to Oct 2024</p></div>
+          <div><p class="role">Technical Team Intern</p><p>Wrote unit tests for an AI-driven Kubernetes pod autoscaler, covering its scaling logic and edge cases, and tested its REST endpoints with Postman.</p></div>
+          <p class="where mono">Boston, MA</p>
+        </li>
+        <li class="reveal">
+          <div><p class="co">Work Based Learning Alliance</p><p class="when mono">Jan to Apr 2025</p></div>
+          <div><p class="role">Technology Specialist Intern</p><p>Worked with a cross-functional team to help a local vocal coaching business grow its online programs using automation and AI tools.</p></div>
+          <p class="where mono">Boston, MA</p>
+        </li>
+        <li class="reveal">
+          <div><p class="co">Holliston High School</p><p class="when mono">Sep 2024 to May 2025</p></div>
+          <div><p class="role">Teaching Assistant, AP Computer Science A and Principles</p><p>Taught Java and Python fundamentals, helped students through labs and coding assessments, and wrote programming evaluations.</p></div>
+          <p class="where mono">Holliston, MA</p>
+        </li>
+      </ul>
     </section>
 
     <!-- ============ 04 TOOLKIT ============ -->
