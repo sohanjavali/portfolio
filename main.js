@@ -1,11 +1,179 @@
-// Plays the fake "agent runs". Everything here is decoration: the content is
-// already in the HTML, so the page works the same with JavaScript turned off.
+// Everything in this file is decoration. All the content is already in the
+// HTML, so the page reads the same with JavaScript turned off.
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Reveal each line of a log at its data-at time (ms), and mark it finished at
-// its data-done time. Lines with the same data-at start together, which is how
-// the "parallel" agents work. Returns when the whole log will be finished.
+/* ------------------------------------------------------------------
+   1. Hero background: "agents" moving across a dot grid in parallel.
+      Each agent walks node to node, sometimes turns, leaves a fading
+      trail, and now and then finishes a task (a ripple and a label).
+   ------------------------------------------------------------------ */
+const canvas = document.querySelector('.grid');
+if (canvas) {
+  const ctx = canvas.getContext('2d');
+  const GAP = 32;                       // px between grid dots
+  const TASKS = ['retrieval', 'ocr', 'extract', 'guards', 'research', 'script', 'voice', 'tests', 'review', 'merge'];
+  let w = 0, h = 0, cols = 0, rows = 0, dots = null, colors = {};
+  let agents = [], ripples = [], last = 0, running = false, visible = true;
+
+  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  const readColors = () => { colors = { dot: css('--dim'), trail: css('--muted'), accent: css('--accent'), ok: css('--ok') }; };
+
+  // Draw the static dots once onto an offscreen canvas, then copy it each frame (much cheaper).
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = canvas.clientWidth; h = canvas.clientHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cols = Math.ceil(w / GAP); rows = Math.ceil(h / GAP);
+    dots = document.createElement('canvas');
+    dots.width = w * dpr; dots.height = h * dpr;
+    const d = dots.getContext('2d');
+    d.setTransform(dpr, 0, 0, dpr, 0, 0);
+    d.fillStyle = colors.dot; d.globalAlpha = 0.6;
+    for (let x = 0; x <= cols; x++) for (let y = 0; y <= rows; y++) d.fillRect(x * GAP - 0.75, y * GAP - 0.75, 1.5, 1.5);
+    const target = Math.max(5, Math.min(16, Math.round(w / 100)));
+    while (agents.length < target) agents.push(spawn());
+    agents.length = Math.min(agents.length, target + 8);
+  }
+
+  const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+  function spawn(x, y) {
+    const [dx, dy] = DIRS[Math.floor(Math.random() * 4)];
+    return {
+      x: x ?? Math.floor(cols * (0.2 + Math.random() * 0.8)),   // mostly right of center, away from the text
+      y: y ?? Math.floor(Math.random() * rows),
+      dx, dy, t: 0,
+      speed: 2.2 + Math.random() * 2.2,                          // grid steps per second
+      trail: [],
+    };
+  }
+
+  function step(a) {
+    a.trail.push([a.x, a.y]);
+    if (a.trail.length > 18) a.trail.shift();
+    a.x += a.dx; a.y += a.dy;
+    if (Math.random() < 0.12) {                                  // turn left or right, never reverse
+      [a.dx, a.dy] = Math.random() < 0.5 ? [a.dy, -a.dx] : [-a.dy, a.dx];
+    }
+    if (Math.random() < 0.05) {                                  // "finished a task"
+      ripples.push({ x: a.x, y: a.y, age: 0, label: TASKS[Math.floor(Math.random() * TASKS.length)] });
+    }
+    if (a.x < -1 || a.y < -1 || a.x > cols + 1 || a.y > rows + 1) Object.assign(a, spawn(), { trail: [] });
+  }
+
+  function update(dt) {
+    for (const a of agents) {
+      a.t += a.speed * dt;
+      while (a.t >= 1) { a.t -= 1; step(a); }
+    }
+    for (const r of ripples) r.age += dt;
+    ripples = ripples.filter((r) => r.age < 1.6);
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(dots, 0, 0, w, h);
+    ctx.lineCap = 'round';
+
+    for (const a of agents) {
+      const hx = (a.x + a.dx * a.t) * GAP, hy = (a.y + a.dy * a.t) * GAP;
+      const pts = [...a.trail.map(([x, y]) => [x * GAP, y * GAP]), [a.x * GAP, a.y * GAP], [hx, hy]];
+      ctx.strokeStyle = colors.accent; ctx.lineWidth = 1.5;
+      for (let i = 1; i < pts.length; i++) {                     // older segments fade out
+        ctx.globalAlpha = (i / pts.length) * 0.6;
+        ctx.beginPath(); ctx.moveTo(...pts[i - 1]); ctx.lineTo(...pts[i]); ctx.stroke();
+      }
+      ctx.globalAlpha = 0.18; ctx.fillStyle = colors.accent;     // soft glow, then the head
+      ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.fillRect(hx - 2.5, hy - 2.5, 5, 5);
+    }
+
+    ctx.font = '11px "JetBrains Mono", ui-monospace, monospace';
+    for (const r of ripples) {
+      const k = r.age / 1.6, x = r.x * GAP, y = r.y * GAP;
+      ctx.globalAlpha = (1 - k) * 0.8; ctx.strokeStyle = colors.ok; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(x, y, 4 + k * 26, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = colors.ok;
+      ctx.fillText('✓ ' + r.label, x + 10, y - 10 - k * 8);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function frame(now) {
+    if (!running) return;
+    const dt = Math.min((now - last) / 1000, 0.05); last = now;
+    update(dt); draw();
+    requestAnimationFrame(frame);
+  }
+  function start() { if (running || reduceMotion || !visible || document.hidden) return; running = true; last = performance.now(); requestAnimationFrame(frame); }
+  function stop() { running = false; }
+
+  readColors(); resize();
+  if (reduceMotion) { for (let i = 0; i < 150; i++) update(1 / 30); draw(); }   // one still frame
+  else start();
+
+  // Only animate while the hero is on screen and the tab is visible (saves battery).
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(canvas);
+  document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
+  new ResizeObserver(() => { resize(); if (!running) draw(); }).observe(canvas);
+  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { readColors(); resize(); draw(); });
+
+  // Click the grid to drop in a new agent at the nearest dot.
+  canvas.addEventListener('pointerdown', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.round((e.clientX - rect.left) / GAP), y = Math.round((e.clientY - rect.top) / GAP);
+    agents.push(spawn(x, y));
+    if (agents.length > 24) agents.shift();
+    ripples.push({ x, y, age: 0, label: 'spawned' });
+    if (!running) draw();
+  });
+}
+
+/* ------------------------------------------------------------------
+   2. Section labels "decode" from random characters when they scroll in.
+   ------------------------------------------------------------------ */
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+function scramble(el) {
+  const final = el.textContent;
+  const total = 700, start = performance.now();
+  (function tick(now) {
+    const p = Math.min((now - start) / total, 1);
+    const fixed = Math.floor(p * final.length);                  // characters locked in so far
+    el.textContent = [...final].map((c, i) =>
+      i < fixed || c === ' ' || c === '/' ? c : CHARS[Math.floor(Math.random() * CHARS.length)]
+    ).join('');
+    if (p < 1) requestAnimationFrame(tick);
+  })(start);
+}
+
+/* ------------------------------------------------------------------
+   3. Fade elements up as they scroll into view, once.
+   ------------------------------------------------------------------ */
+const seen = new IntersectionObserver((entries) => {
+  for (const e of entries) {
+    if (!e.isIntersecting) continue;
+    e.target.classList.add('in');
+    if (e.target.hasAttribute('data-scramble') && !reduceMotion) scramble(e.target);
+    seen.unobserve(e.target);
+  }
+}, { rootMargin: '0px 0px -10% 0px' });
+document.querySelectorAll('.reveal, [data-scramble]').forEach((el) => seen.observe(el));
+
+/* ------------------------------------------------------------------
+   4. Nav gets a bottom border once you scroll.
+   ------------------------------------------------------------------ */
+const nav = document.querySelector('.nav');
+const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+/* ------------------------------------------------------------------
+   5. Project rows: the first time one opens, play its agent log, then
+      reveal the write-up. After that it opens instantly.
+   ------------------------------------------------------------------ */
+// Each log line has data-at (ms until it appears) and optionally data-done
+// (ms until its spinner becomes a check). Same data-at = running in parallel.
 function play(list) {
   let end = 0;
   for (const li of list.querySelectorAll('li')) {
@@ -19,31 +187,12 @@ function play(list) {
   return end;
 }
 
-// Show a log instantly, all lines finished (for reduced motion).
-function showAll(list) {
-  for (const li of list.querySelectorAll('li')) li.classList.add('on', 'done');
-}
-
-// Hero terminal runs once on load.
-const lanes = document.querySelector('.lanes');
-if (lanes) reduceMotion ? showAll(lanes) : play(lanes);
-
-// Project rows: the first time one opens, run its log, then reveal the write-up.
-// After that it opens instantly, so nobody has to sit through it twice.
 for (const row of document.querySelectorAll('details.run')) {
   row.addEventListener('toggle', () => {
     if (!row.open || row.classList.contains('played')) return;
-
-    if (reduceMotion) {
-      row.classList.add('played');
-      return;
-    }
-
+    if (reduceMotion) { row.classList.add('played'); return; }
     row.classList.add('running');
     const total = play(row.querySelector('.log'));
-    setTimeout(() => {
-      row.classList.remove('running');
-      row.classList.add('played');
-    }, total + 350);
+    setTimeout(() => { row.classList.remove('running'); row.classList.add('played'); }, total + 350);
   });
 }

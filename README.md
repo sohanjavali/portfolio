@@ -4,7 +4,7 @@ My personal site. Plain HTML, CSS, and a little vanilla JavaScript. No framework
 
 ## Files
 
-`index.html` holds all the content. `style.css` holds all the styling, including dark mode (follows the system setting via `prefers-color-scheme`). `main.js` only plays the agent-run animations; the page works without it.
+`index.html` holds all the content. `style.css` holds all the styling, including dark mode (follows the system setting via `prefers-color-scheme`). `main.js` draws the agent grid behind the hero, decodes the section labels, fades sections in, and plays the project runs. It is all decoration; the page works without it.
 
 ## Updating it
 
