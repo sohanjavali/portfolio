@@ -279,6 +279,7 @@ summary:hover .go { background: var(--accent); color: #fff; }
 .proj > p:not(.tag):not(.tags):not(.proj-cmd) { color: var(--muted); font-size: 0.98rem; }
 .proj > p + p:not(.tags) { margin-top: 0.75rem; }
 .proj .tags { margin-top: auto; padding-top: 1.25rem; }
+.proj-link { font-size: 0.9rem; margin-top: 0.75rem; }
 
 /* Mini pipeline: chips joined by arrows */
 .chips { display: flex; flex-wrap: wrap; gap: 0.45rem 0; margin-top: 1.5rem; font-size: 0.72rem; }

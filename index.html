@@ -187,11 +187,12 @@
         <article class="proj reveal">
           <p class="proj-cmd mono" aria-hidden="true"><span>$</span> run occupancy</p>
           <p class="tag mono">Research <i>/</i> Computer vision <i>/</i> 2026</p>
-          <h3>Satellite parking occupancy</h3>
+          <h3>Parking lot occupancy estimator</h3>
           <p>Estimates how full shopping-mall parking lots are from satellite imagery, as a signal of economic activity. It samples the same weekday every month, since parking depends far more on the day of the week than the date, then pulls the nearest clear satellite frame. A vision model reads the occupancy into a strict schema that Pydantic validates, and pandas pivots every read into a mall-by-date matrix.</p>
           <p>Every image and every read is cached, so a rerun never pays for the same frame twice. Going from a few malls to hundreds is a data change, not a code change.</p>
           <ol class="chips mono" aria-label="Pipeline"><li>mall list</li><li>weekday sampling</li><li>satellite frame</li><li>vision model</li><li>Pydantic check</li><li class="end">mall × date matrix</li></ol>
           <p class="tags mono">Python · Pydantic · pandas · Perplexity vision · OpenStreetMap</p>
+          <a class="arrow-link proj-link" href="https://github.com/sohanjavali/parking-lot-occupancy-estimator">Code on GitHub</a>
         </article>
 
         <article class="proj reveal">
