@@ -72,52 +72,47 @@
           <span class="head">
             <span class="tag mono">Co-op <i>/</i> LLM data pipeline</span>
             <span class="name">LaReg</span>
-            <span class="one">An LLM pipeline that turns energy-project dockets into structured records where every field cites its source. Built with AI agents working in parallel.</span>
+            <span class="one">An LLM pipeline that turns energy-project dockets into structured records where every field cites its source.</span>
           </span>
           <span class="go mono" aria-hidden="true">run</span>
         </summary>
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
-              <li class="cmd" data-at="0">$ run lareg</li>
-              <li data-at="150" data-done="400"><span class="st"></span><b>main</b> split the pipeline into tasks</li>
-              <li data-at="450" data-done="850"><span class="st"></span><b>sub</b> retrieval: Postgres and S3</li>
-              <li data-at="450" data-done="950"><span class="st"></span><b>sub</b> ocr: Textract on scanned pages</li>
-              <li data-at="450" data-done="1050"><span class="st"></span><b>sub</b> extract: Gemini fills the record</li>
-              <li data-at="1100" data-done="1350"><span class="st"></span><b>review</b> check the subagents' work</li>
-              <li data-at="1350" data-done="1550"><span class="st"></span><b>fix</b> send failures back, loop</li>
-              <li class="out" data-at="1650">passed. expanding</li>
+              <li class="cmd" data-at="0">$ run lareg --docket</li>
+              <li data-at="150" data-done="500"><span class="st"></span><b>retrieve</b> find filings in Postgres, pull PDFs from S3</li>
+              <li data-at="500" data-done="850"><span class="st"></span><b>ocr</b> Textract on scanned pages</li>
+              <li data-at="850" data-done="1100"><span class="st"></span><b>budget</b> whole filings only</li>
+              <li data-at="1100" data-done="1400"><span class="st"></span><b>extract</b> Gemini fills the record, cites each page</li>
+              <li data-at="1400" data-done="1600"><span class="st"></span><b>guard</b> owner must be stated in the cited text</li>
+              <li class="out" data-at="1700">record cited. expanding</li>
             </ol>
             <div class="body">
+              <h3 class="sub mono">The problem</h3>
+              <p>Utility commissions keep dockets, the case files for proposed solar farms and transmission lines. Companies file PDFs into them, a lot of them scanned, and LaReg sells the data buried inside. The old pipeline fed the model a fixed handful of PDFs per docket, which often meant it only saw half a filing.</p>
+
               <h3 class="sub mono">What I built</h3>
-              <p>Utility commissions keep dockets, the case files for proposed solar farms and transmission lines, and LaReg sells the data buried in their PDFs. My pipeline pulls a docket's filings from Postgres and S3, OCRs scanned pages with Textract, and has Gemini fill a structured record where every field cites its page.</p>
+              <p>Given a docket, the pipeline finds its filings in Postgres, pulls the PDFs from S3, and OCRs scanned pages with Textract. Filings go to Gemini whole or not at all, inside a token budget, and every field in the record carries the file and page it came from. A response that won't parse counts as a failure, never a silent blank.</p>
 
               <h3 class="sub mono">The hard part</h3>
-              <p>The model kept naming the applicant as the project's owner, so deterministic checks after extraction blank the answer unless the cited text actually says who owns it. I also retrained the BERT classifier that sorts projects by type.</p>
+              <p>Ownership. The model kept naming the applicant as the project's owner, but the company filing the paperwork often isn't the one that owns the project. So I added deterministic checks after extraction: unless the cited text actually says who owns it, the field gets blanked. A blank someone can fill in beats a confident wrong answer.</p>
+              <p>The other fix was in the BERT classifier that sorts projects into subcategories. Some classes had too few examples to learn from, so I retrained it on recent data to fill them out.</p>
 
-              <h3 class="sub mono">How I built it</h3>
-              <p>A main agent split the work and spawned subagents in parallel. A reviewer subagent checked what they produced, the main agent verified it, and failures went back to the subagents to fix, looping until it passed. I set the guardrails: read-only production data, outputs that could only be added to, and every claim cited to a docket.</p>
+              <p class="aside">Built with my agent loop, inside guardrails I set: read-only production data, outputs that could only be added to, and every claim cited to a docket.</p>
 
               <p class="tags mono">Python · Gemini · AWS S3 · Textract · PostgreSQL · PyTorch · Hugging Face</p>
             </div>
           </div>
-          <aside class="diagram" aria-label="LaReg pipeline and agent loop">
+          <aside class="diagram" aria-label="LaReg pipeline">
             <p class="diagram-title mono">pipeline</p>
             <ol class="flow mono">
               <li>docket</li>
               <li>Postgres + S3: filings</li>
               <li>Textract: OCR</li>
+              <li>token budget: whole filings</li>
               <li>Gemini: extraction</li>
               <li>ownership checks</li>
               <li class="end">record with citations</li>
-            </ol>
-            <p class="diagram-title mono">agent loop</p>
-            <ol class="flow mono">
-              <li>main agent splits the work</li>
-              <li class="par"><span>subagent</span><span>subagent</span><span>subagent</span></li>
-              <li>reviewer subagent checks</li>
-              <li>main agent verifies</li>
-              <li class="end">↺ back to subagents until it passes</li>
             </ol>
           </aside>
         </div>
