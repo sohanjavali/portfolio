@@ -1,6 +1,6 @@
 # Portfolio
 
-My personal site. Plain HTML and CSS, no framework, no build step, no JavaScript.
+My personal site. Plain HTML, CSS, and a little vanilla JavaScript. No framework, no build step.
 
 ## Files
 
