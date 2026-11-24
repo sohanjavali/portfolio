@@ -4,28 +4,31 @@
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ------------------------------------------------------------------
-   1. Hero background: "agents" moving across a faint grid in parallel.
+   1. Background: "agents" moving across a faint grid in parallel.
       Each agent walks node to node, sometimes turns, leaves a fading
       trail, and now and then finishes a task (a ripple and a label).
+      field() builds one of these on a canvas. It runs twice:
+        - the hero, at full strength, where you can click to spawn agents
+        - a fixed layer behind the rest of the page, muted (strength 0.35,
+          fewer and slower agents) so it doesn't fight the text
    ------------------------------------------------------------------ */
-const canvas = document.querySelector('.grid');
-if (canvas) {
-  const ctx = canvas.getContext('2d');
-  const GAP = 32;                       // px between grid dots
-  // Little "task finished" labels, pulled from things I've actually built
-  const TASKS = [
-    'parse docket', 'fetch filings', 'ocr scan', 'extract fields', 'cite source', 'check owner', 'retrain bert',
-    'research topic', 'write script', 'voice line', 'stitch mp3', 'save episode',
-    'sample weekday', 'order frame', 'read lot', 'validate schema', 'pivot matrix',
-    'find leads', 'score lead', 'draft email', 'approve draft', 'send batch', 'triage reply',
-    'capture note', 'route inbox', 'lint note', 'commit', 'push backup', 'weekly audit',
-    'run tests', 'review diff', 'merge', 'deploy',
-  ];
-  let w = 0, h = 0, cols = 0, rows = 0, dots = null, colors = {};
-  let agents = [], ripples = [], last = 0, running = false, visible = true;
+// Little "task finished" labels, pulled from things I've actually built
+const TASKS = [
+  'parse docket', 'fetch filings', 'ocr scan', 'extract fields', 'cite source', 'check owner', 'retrain bert',
+  'research topic', 'write script', 'voice line', 'stitch mp3', 'save episode',
+  'sample weekday', 'order frame', 'read lot', 'validate schema', 'pivot matrix',
+  'find leads', 'score lead', 'draft email', 'approve draft', 'send batch', 'triage reply',
+  'capture note', 'route inbox', 'lint note', 'commit', 'push backup', 'weekly audit',
+  'run tests', 'review diff', 'merge', 'deploy',
+];
+const GAP = 32;                         // px between grid lines
+const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
-  const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  const readColors = () => { colors = { dot: css('--dim'), trail: css('--muted'), accent: css('--accent'), ok: css('--ok') }; };
+function field(canvas, { strength = 1, perPx = 100, speed = 1, spread = 0.8 } = {}) {
+  const ctx = canvas.getContext('2d');
+  let w = 0, h = 0, cols = 0, rows = 0, grid = null, colors = {};
+  let agents = [], ripples = [], last = 0, running = false, active = true;
+  const readColors = () => { colors = { line: css('--dim'), accent: css('--accent'), ok: css('--ok') }; };
 
   // Draw the static grid once onto an offscreen canvas, then copy it each frame (much cheaper).
   function resize() {
@@ -34,16 +37,16 @@ if (canvas) {
     canvas.width = w * dpr; canvas.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     cols = Math.ceil(w / GAP); rows = Math.ceil(h / GAP);
-    dots = document.createElement('canvas');
-    dots.width = w * dpr; dots.height = h * dpr;
-    const d = dots.getContext('2d');
+    grid = document.createElement('canvas');
+    grid.width = w * dpr; grid.height = h * dpr;
+    const d = grid.getContext('2d');
     d.setTransform(dpr, 0, 0, dpr, 0, 0);
-    d.strokeStyle = colors.dot; d.globalAlpha = 0.14; d.lineWidth = 1;   // very faint gray grid lines
+    d.strokeStyle = colors.line; d.globalAlpha = 0.14 * Math.max(strength, 0.6); d.lineWidth = 1;   // very faint gray grid
     d.beginPath();
     for (let x = 0; x <= cols; x++) { d.moveTo(x * GAP + 0.5, 0); d.lineTo(x * GAP + 0.5, h); }
     for (let y = 0; y <= rows; y++) { d.moveTo(0, y * GAP + 0.5); d.lineTo(w, y * GAP + 0.5); }
     d.stroke();
-    const target = Math.max(5, Math.min(16, Math.round(w / 100)));
+    const target = Math.max(4, Math.min(16, Math.round(w / perPx)));
     while (agents.length < target) agents.push(spawn());
     agents.length = Math.min(agents.length, target + 8);
   }
@@ -52,10 +55,10 @@ if (canvas) {
   function spawn(x, y) {
     const [dx, dy] = DIRS[Math.floor(Math.random() * 4)];
     return {
-      x: x ?? Math.floor(cols * (0.2 + Math.random() * 0.8)),   // mostly right of center, away from the text
+      x: x ?? Math.floor(cols * (1 - spread + Math.random() * spread)),   // hero: mostly right of center, away from the text
       y: y ?? Math.floor(Math.random() * rows),
       dx, dy, t: 0,
-      speed: 2.2 + Math.random() * 2.2,                          // grid steps per second
+      speed: (2.2 + Math.random() * 2.2) * speed,                        // grid steps per second
       trail: [],
     };
   }
@@ -84,7 +87,8 @@ if (canvas) {
 
   function draw() {
     ctx.clearRect(0, 0, w, h);
-    ctx.drawImage(dots, 0, 0, w, h);
+    ctx.globalAlpha = 1;
+    ctx.drawImage(grid, 0, 0, w, h);
     ctx.lineCap = 'round';
 
     for (const a of agents) {
@@ -92,19 +96,19 @@ if (canvas) {
       const pts = [...a.trail.map(([x, y]) => [x * GAP, y * GAP]), [a.x * GAP, a.y * GAP], [hx, hy]];
       ctx.strokeStyle = colors.accent; ctx.lineWidth = 1.5;
       for (let i = 1; i < pts.length; i++) {                     // older segments fade out
-        ctx.globalAlpha = (i / pts.length) * 0.6;
+        ctx.globalAlpha = (i / pts.length) * 0.6 * strength;
         ctx.beginPath(); ctx.moveTo(...pts[i - 1]); ctx.lineTo(...pts[i]); ctx.stroke();
       }
-      ctx.globalAlpha = 0.18; ctx.fillStyle = colors.accent;     // soft glow, then the head
+      ctx.globalAlpha = 0.18 * strength; ctx.fillStyle = colors.accent;     // soft glow, then the head
       ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha = strength;
       ctx.fillRect(hx - 2.5, hy - 2.5, 5, 5);
     }
 
     ctx.font = '11px "JetBrains Mono", ui-monospace, monospace';
     for (const r of ripples) {
       const k = r.age / 1.6, x = r.x * GAP, y = r.y * GAP;
-      ctx.globalAlpha = (1 - k) * 0.8; ctx.strokeStyle = colors.ok; ctx.lineWidth = 1;
+      ctx.globalAlpha = (1 - k) * 0.8 * strength; ctx.strokeStyle = colors.ok; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.arc(x, y, 4 + k * 26, 0, Math.PI * 2); ctx.stroke();
       ctx.fillStyle = colors.ok;
       ctx.fillText(r.label, x + 10, y - 10 - k * 8);
@@ -118,28 +122,56 @@ if (canvas) {
     update(dt); draw();
     requestAnimationFrame(frame);
   }
-  function start() { if (running || reduceMotion || !visible || document.hidden) return; running = true; last = performance.now(); requestAnimationFrame(frame); }
+  function start() { if (running || reduceMotion || !active || document.hidden) return; running = true; last = performance.now(); requestAnimationFrame(frame); }
   function stop() { running = false; }
 
   readColors(); resize();
   if (reduceMotion) { for (let i = 0; i < 150; i++) update(1 / 30); draw(); }   // one still frame
   else start();
 
-  // Only animate while the hero is on screen and the tab is visible (saves battery).
-  new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(canvas);
   document.addEventListener('visibilitychange', () => (document.hidden ? stop() : start()));
   new ResizeObserver(() => { resize(); if (!running) draw(); }).observe(canvas);
   window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { readColors(); resize(); draw(); });
 
-  // Click the grid to drop in a new agent at the nearest grid point.
-  canvas.addEventListener('pointerdown', (e) => {
-    const rect = canvas.getBoundingClientRect();
-    const x = Math.round((e.clientX - rect.left) / GAP), y = Math.round((e.clientY - rect.top) / GAP);
-    agents.push(spawn(x, y));
-    if (agents.length > 24) agents.shift();
-    ripples.push({ x, y, age: 0, label: 'spawned' });
-    if (!running) draw();
+  return {
+    // Pause when not on screen (saves battery); the caller decides when that is.
+    setActive(on) { active = on; on ? start() : stop(); },
+    // Drop in a new agent at the nearest grid point.
+    spawnAt(px, py) {
+      const x = Math.round(px / GAP), y = Math.round(py / GAP);
+      agents.push(spawn(x, y));
+      if (agents.length > 24) agents.shift();
+      ripples.push({ x, y, age: 0, label: 'spawned' });
+      if (!running) draw();
+    },
+  };
+}
+
+// Hero: full strength, click to spawn, paused when scrolled out of view.
+const heroCanvas = document.querySelector('.grid');
+if (heroCanvas) {
+  const hero = field(heroCanvas);
+  new IntersectionObserver(([e]) => hero.setActive(e.isIntersecting)).observe(heroCanvas);
+  heroCanvas.addEventListener('pointerdown', (e) => {
+    const r = heroCanvas.getBoundingClientRect();
+    hero.spawnAt(e.clientX - r.left, e.clientY - r.top);
   });
+}
+
+// Rest of the page: a fixed, muted layer that fades in as the hero scrolls away.
+const pageCanvas = document.querySelector('.field');
+if (pageCanvas) {
+  const bg = field(pageCanvas, { strength: 0.35, perPx: 220, speed: 0.6, spread: 1 });
+  const heroEl = document.querySelector('.hero');
+  const fade = () => {
+    const hh = heroEl ? heroEl.offsetHeight : innerHeight;
+    const o = Math.min(1, Math.max(0, (scrollY - hh * 0.5) / (hh * 0.5)));   // 0 over the hero, 1 once past it
+    pageCanvas.style.opacity = o;
+    bg.setActive(o > 0);
+  };
+  addEventListener('scroll', fade, { passive: true });
+  addEventListener('resize', fade);
+  fade();
 }
 
 /* ------------------------------------------------------------------
