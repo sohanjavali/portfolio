@@ -355,3 +355,29 @@ summary:hover .go { background: var(--accent); color: #fff; }
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .js .reveal { opacity: 1; transform: none; }
 }
+
+/* =========================================================
+   Scrollbar: thin track, glowing accent "pill" thumb.
+   Chrome/Safari use the ::-webkit-scrollbar pseudo-elements; Firefox only
+   understands scrollbar-color, so that's scoped to Firefox. (In Chrome,
+   setting scrollbar-color would switch off the custom pseudo-element styles.)
+   ========================================================= */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--bg); border-left: 1px solid var(--line); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--accent), color-mix(in srgb, var(--accent) 45%, var(--bg)));
+  border-radius: 999px;
+  border: 3px solid var(--bg);       /* fake padding so the pill floats inside the track */
+}
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+@supports (-moz-appearance: none) {
+  html { scrollbar-width: thin; scrollbar-color: var(--accent) var(--bg); }
+}
+
+/* Reading-progress line under the nav; main.js sets --progress from 0 to 1 */
+.progress {
+  position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--ok));
+  transform-origin: left; transform: scaleX(var(--progress, 0));
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 60%, transparent);
+}

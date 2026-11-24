@@ -196,10 +196,14 @@ const seen = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal, [data-scramble]').forEach((el) => seen.observe(el));
 
 /* ------------------------------------------------------------------
-   4. Nav gets a bottom border once you scroll.
+   4. Nav gets a bottom border once you scroll, and the progress line fills.
    ------------------------------------------------------------------ */
 const nav = document.querySelector('.nav');
-const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+const onScroll = () => {
+  nav.classList.toggle('scrolled', window.scrollY > 8);
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  nav.style.setProperty('--progress', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
+};
 window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
 /* ------------------------------------------------------------------

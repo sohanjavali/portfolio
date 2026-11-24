@@ -36,6 +36,7 @@
       <a href="#contact">Contact</a>
     </nav>
     <p class="status"><span class="dot" aria-hidden="true"></span>Open to Spring 2027 co-op</p>
+    <span class="progress" aria-hidden="true"></span>
   </header>
 
   <main id="top">
@@ -62,7 +63,7 @@
     <section id="work" class="block wrap">
       <div class="block-head">
         <p class="label mono" data-scramble>01 / Selected work</p>
-        <p class="caption">My co-op and the things I've built on my own. Most of them I built by running AI coding agents in parallel, with me setting the guardrails and deciding what ships. Click one to run it.</p>
+        <p class="caption">My co-op and things I've built. Most were built with an agent loop: a main agent runs subagents in parallel, a reviewer checks their work, and they fix until it passes. Click one to run it.</p>
       </div>
 
       <details class="run">
@@ -78,47 +79,45 @@
         <div class="panel">
           <div class="panel-main">
             <ol class="log mono" aria-hidden="true">
-              <li class="cmd" data-at="0">$ run lareg --agents 4</li>
-              <li data-at="150" data-done="700"><span class="st"></span><b>retrieval</b> pull filings from Postgres and S3</li>
-              <li data-at="150" data-done="1000"><span class="st"></span><b>ocr</b> read scanned pages with Textract</li>
-              <li data-at="150" data-done="1250"><span class="st"></span><b>extract</b> fill the record with Gemini</li>
-              <li data-at="150" data-done="1500"><span class="st"></span><b>guards</b> check ownership against the source</li>
-              <li class="out" data-at="1650">merged. expanding</li>
+              <li class="cmd" data-at="0">$ run lareg</li>
+              <li data-at="150" data-done="400"><span class="st"></span><b>main</b> split the pipeline into tasks</li>
+              <li data-at="450" data-done="850"><span class="st"></span><b>sub</b> retrieval: Postgres and S3</li>
+              <li data-at="450" data-done="950"><span class="st"></span><b>sub</b> ocr: Textract on scanned pages</li>
+              <li data-at="450" data-done="1050"><span class="st"></span><b>sub</b> extract: Gemini fills the record</li>
+              <li data-at="1100" data-done="1350"><span class="st"></span><b>review</b> check the subagents' work</li>
+              <li data-at="1350" data-done="1550"><span class="st"></span><b>fix</b> send failures back, loop</li>
+              <li class="out" data-at="1650">passed. expanding</li>
             </ol>
             <div class="body">
-              <h3 class="sub mono">The problem</h3>
-              <p>State utility commissions keep dockets, the case files for proposed energy projects like solar farms and transmission lines. Companies file PDFs into them, many of them scanned, and LaReg sells the structured data buried inside. The old pipeline fed the model a fixed handful of PDFs per docket, which often meant half a filing.</p>
-
               <h3 class="sub mono">What I built</h3>
-              <p>Given a docket, the pipeline finds its filings in Postgres, pulls the PDFs from S3, and runs OCR with AWS Textract on scanned pages. A filing goes to the model whole or not at all, inside a token budget, so Gemini never sees a fragment of one. Gemini fills a structured record from a grounded prompt, and every field carries the file and page it came from. An unparseable response counts as a failure, never as a silent blank.</p>
+              <p>Utility commissions keep dockets, the case files for proposed solar farms and transmission lines, and LaReg sells the data buried in their PDFs. My pipeline pulls a docket's filings from Postgres and S3, OCRs scanned pages with Textract, and has Gemini fill a structured record where every field cites its page.</p>
 
               <h3 class="sub mono">The hard part</h3>
-              <p>Ownership. The model kept naming the applicant as the owner, so I added deterministic checks after extraction that blank the answer unless the cited text actually says who owns the project. Separately, I retrained the BERT classifier that sorts projects into subcategories, using recent data to fix classes that had too few examples.</p>
+              <p>The model kept naming the applicant as the project's owner, so deterministic checks after extraction blank the answer unless the cited text actually says who owns it. I also retrained the BERT classifier that sorts projects by type.</p>
 
-              <h3 class="sub mono">How the work got done</h3>
-              <p>I ran several AI coding agents at once, each on its own piece of the pipeline, inside guardrails I set: read-only access to production data, outputs could only be added to and never overwritten, and every claim had to cite a docket number. My job was scoping the tasks, reviewing what came back, and deciding what shipped.</p>
+              <h3 class="sub mono">How I built it</h3>
+              <p>A main agent split the work and spawned subagents in parallel. A reviewer subagent checked what they produced, the main agent verified it, and failures went back to the subagents to fix, looping until it passed. I set the guardrails: read-only production data, outputs that could only be added to, and every claim cited to a docket.</p>
 
               <p class="tags mono">Python · Gemini · AWS S3 · Textract · PostgreSQL · PyTorch · Hugging Face</p>
             </div>
           </div>
-          <aside class="diagram" aria-label="LaReg pipeline">
+          <aside class="diagram" aria-label="LaReg pipeline and agent loop">
             <p class="diagram-title mono">pipeline</p>
             <ol class="flow mono">
-              <li>docket number</li>
-              <li>Postgres: find filings</li>
-              <li>S3: pull PDFs</li>
-              <li>Textract: OCR scanned pages</li>
-              <li>token budget: whole filings only</li>
-              <li>Gemini: structured extraction</li>
+              <li>docket</li>
+              <li>Postgres + S3: filings</li>
+              <li>Textract: OCR</li>
+              <li>Gemini: extraction</li>
               <li>ownership checks</li>
               <li class="end">record with citations</li>
             </ol>
-            <p class="diagram-title mono">how I worked</p>
+            <p class="diagram-title mono">agent loop</p>
             <ol class="flow mono">
-              <li>I scope tasks</li>
-              <li class="par"><span>agent</span><span>agent</span><span>agent</span></li>
-              <li>I review</li>
-              <li class="end">ship</li>
+              <li>main agent splits the work</li>
+              <li class="par"><span>subagent</span><span>subagent</span><span>subagent</span></li>
+              <li>reviewer subagent checks</li>
+              <li>main agent verifies</li>
+              <li class="end">↺ back to subagents until it passes</li>
             </ol>
           </aside>
         </div>
@@ -145,20 +144,14 @@
               <li class="out" data-at="1650">vault in order. expanding</li>
             </ol>
             <div class="body">
-              <h3 class="sub mono">Why I built it</h3>
-              <p>Every new AI chat starts cold, and I wanted one that actually knew me. So I built a place where Claude can pick up where I am: what I'm working on, what I've decided and why, and what I said I wanted. It all lives in one Obsidian vault of plain Markdown files.</p>
-
               <h3 class="sub mono">What it's for</h3>
-              <p>It works a lot like a diary. It records how I think, what's going on in my life day to day, the decisions I make, the people around me, and how my beliefs change over time. Having all of that written down keeps me honest. When what I'm doing drifts from what I said I wanted, Claude calls it out. The point isn't just being more organized. It's staying pointed at my goals and getting better as a person.</p>
+              <p>Part diary, part operating system. It records how I think, what happens day to day, the decisions I make, and how my beliefs change. Claude reads it every session, so it knows where I am and calls me out when I drift from what I said I wanted. The point is staying pointed at my goals and getting better as a person.</p>
 
               <h3 class="sub mono">How I use it</h3>
-              <p>When I open a session, a hook loads my current state so Claude isn't guessing. When something happens, like a decision or a new idea, I dump it in and a capture skill asks follow-up questions before filing it in an inbox. A routing skill then splits that one note across every file it belongs in, and nothing gets written until I approve it. When a thread gets long, a handoff skill saves where I am so a fresh session can keep going.</p>
-
-              <h3 class="sub mono">How it remembers</h3>
-              <p>Decisions are logged with the reasoning and what I was optimizing for, so I can look back and see what repeats. Beliefs are never overwritten: when my thinking changes, the old version stays and the change gets a dated entry. That history is the evidence Claude uses when it pushes back.</p>
+              <p>I dump in a thought, a capture skill asks follow-up questions, and a routing skill files it everywhere it belongs once I approve. Beliefs are never overwritten, so the old versions stay as evidence.</p>
 
               <h3 class="sub mono">What keeps it in order</h3>
-              <p>Hooks lint every edit as it happens and block writes to the archive. Every approved change is its own git commit, logged to a changelog and synced to a private GitHub backup automatically. Once a week a cloud job reads that backup and writes me a digest of what changed, what got done, and what's next, even when my laptop is off.</p>
+              <p>Hooks lint every edit, every change is its own commit synced to GitHub, and a weekly cloud job sends me a digest even when my laptop is off.</p>
 
               <p class="tags mono">Claude Code skills and hooks · Obsidian · Markdown · Python · Bash · Git</p>
             </div>
@@ -167,18 +160,10 @@
             <p class="diagram-title mono">how a note moves</p>
             <ol class="flow mono">
               <li>capture + follow-up questions</li>
-              <li>inbox</li>
+              <li>I approve</li>
               <li>route to every file it belongs in</li>
-              <li>I approve the write</li>
               <li>lint on write</li>
-              <li>commit + changelog</li>
-              <li class="end">auto-sync to GitHub</li>
-            </ol>
-            <p class="diagram-title mono">every session</p>
-            <ol class="flow mono">
-              <li>hook loads current state</li>
-              <li>work with full context</li>
-              <li class="end">handoff saves state</li>
+              <li class="end">commit + GitHub sync</li>
             </ol>
             <p class="diagram-title mono">every sunday</p>
             <ol class="flow mono">
@@ -211,13 +196,10 @@
             </ol>
             <div class="body">
               <h3 class="sub mono">What it does</h3>
-              <p>You type a topic, pick a style and a length, and get back a podcast episode you can play. Next.js and React on the front, Node and Express on the back, Supabase for accounts and storage.</p>
-
-              <h3 class="sub mono">How a request flows</h3>
-              <p>Claude first checks that the topic is safe and doable, before any account work happens. Then the request passes a Supabase login check and runs through three stages: Claude researches the topic into structured notes, Claude turns the notes into a script where every line has a speaker and an emotion, and each line goes to Cartesia's text-to-speech API. The audio chunks get stitched into one MP3, uploaded to Supabase Storage, and the episode details go into the database so your library is there next time.</p>
+              <p>Type a topic, pick a style and length, and get back a podcast episode. Claude researches it and writes a script for multiple hosts, Cartesia voices each line, and the MP3 lands in your Supabase library.</p>
 
               <h3 class="sub mono">The decision I'd defend</h3>
-              <p>Every Claude call answers in a fixed JSON schema. The model has to respond in a shape the code already expects, so a weird response can't break the pipeline halfway through an episode.</p>
+              <p>Every Claude call answers in a fixed JSON schema, so a weird response can't break the pipeline halfway through an episode.</p>
 
               <p class="tags mono">Next.js · React · TypeScript · Node · Express · Supabase · Claude API · Cartesia</p>
               <p><a class="arrow-link" href="https://github.com/sohanjavali/AutoPod-secure">Code on GitHub</a></p>
@@ -228,12 +210,10 @@
             <ol class="flow mono">
               <li>topic</li>
               <li>Claude: validate</li>
-              <li>Supabase: auth check</li>
-              <li>Claude: research notes</li>
+              <li>Claude: research</li>
               <li>Claude: script</li>
-              <li>Cartesia: voice each line</li>
-              <li>stitch into one MP3</li>
-              <li class="end">Supabase: storage + library</li>
+              <li>Cartesia: voice</li>
+              <li class="end">MP3 in Supabase</li>
             </ol>
           </aside>
         </div>
@@ -261,13 +241,10 @@
             </ol>
             <div class="body">
               <h3 class="sub mono">What it does</h3>
-              <p>Give it a list of malls, typed in or pulled from OpenStreetMap, and it builds a mall-by-date table of how full each parking lot was. For every mall and date it finds the nearest clear satellite image, and a vision model reads the occupancy into a strict schema: a percentage, a confidence, and whether clouds hid the lot. Pydantic validates every read, and pandas pivots them into the final matrix.</p>
+              <p>Builds a mall-by-date table of how full each parking lot was. For each date it finds the nearest clear satellite image, and a vision model reads the occupancy into a schema that Pydantic validates.</p>
 
               <h3 class="sub mono">Why the same weekday</h3>
-              <p>Parking depends far more on the day of the week than on the date. A Saturday isn't comparable to a Tuesday. So it samples the first and third Thursday of every month, and when no clear image exists it searches in whole weeks so the substitute stays on a Thursday.</p>
-
-              <h3 class="sub mono">Cost and honesty</h3>
-              <p>Every satellite frame is a paid order, so it buys the cheapest image that's sharp enough to judge fullness, refuses anything over a price cap, and caches every result so a rerun never pays twice. A missing image is recorded as missing, never as an empty lot. Going from a few malls to hundreds is a data change, not a code change.</p>
+              <p>Parking depends on the day of the week more than the date, so it samples the same Thursdays every month. Every image is a paid order, so results are cached and a rerun never pays twice.</p>
 
               <p class="tags mono">Python · Pydantic · pandas · Perplexity vision · OpenStreetMap</p>
               <p><a class="arrow-link" href="https://github.com/sohanjavali/parking-lot-occupancy-estimator">Code on GitHub</a></p>
@@ -276,13 +253,11 @@
           <aside class="diagram" aria-label="Parking lot occupancy pipeline">
             <p class="diagram-title mono">pipeline</p>
             <ol class="flow mono">
-              <li>mall list: seed or OpenStreetMap</li>
-              <li>weekday-anchored dates</li>
-              <li>archive search: cloud, coverage, price</li>
-              <li>order + render frame</li>
-              <li>vision model: occupancy read</li>
-              <li>Pydantic: validate schema</li>
-              <li>cache every result</li>
+              <li>mall list</li>
+              <li>same-weekday dates</li>
+              <li>clear satellite frame</li>
+              <li>vision read</li>
+              <li>Pydantic check</li>
               <li class="end">mall × date matrix</li>
             </ol>
           </aside>
@@ -310,17 +285,11 @@
               <li class="out" data-at="1650">batch done. expanding</li>
             </ol>
             <div class="body">
-              <h3 class="sub mono">Why it exists</h3>
-              <p>Cold outreach is mostly repetition: finding the right people, writing a first line that doesn't sound like a template, and remembering to follow up. The kit automates the repetition and leaves the judgment with a person.</p>
-
               <h3 class="sub mono">What it does</h3>
-              <p>It finds leads, scores them, and drafts each email in the sender's own voice. Nothing sends until a person approves it. Approved emails go out on a fixed follow-up schedule with daily send caps, so a mailbox never looks like spam, and replies get triaged into a weekly report.</p>
+              <p>Finds leads, scores them, and drafts each email in the sender's voice. Nothing sends until a person approves it. Then it follows up on schedule under daily caps and triages the replies.</p>
 
               <h3 class="sub mono">How it's built</h3>
-              <p>Each job is its own Claude Code skill: onboarding, the daily batch, the approval sweep, follow-ups, reply triage, and the weekly report. The skills call Python scripts for the parts that should be deterministic, and a test suite covers those scripts.</p>
-
-              <h3 class="sub mono">Where it is now</h3>
-              <p>It's being packaged and sold as a product: a free playbook page that explains the approach, the kit itself, and a done-for-you setup call for people who'd rather not install it themselves.</p>
+              <p>Each job is its own Claude Code skill, backed by Python scripts and tests. It's sold as a product with an optional done-for-you setup.</p>
 
               <p class="tags mono">Claude Code skills · Python · Apollo · Gmail</p>
               <p><a class="arrow-link" href="https://fate-satellite-ea1.notion.site/Win-More-Deals-With-Claude-The-Outbound-Playbook-387fbb12b48083faaf77010690b7a23e">Read the playbook</a></p>
@@ -329,13 +298,11 @@
           <aside class="diagram" aria-label="Outbound kit flow">
             <p class="diagram-title mono">daily flow</p>
             <ol class="flow mono">
-              <li>find leads</li>
-              <li>score and filter</li>
-              <li>draft in the sender's voice</li>
+              <li>find + score leads</li>
+              <li>draft in your voice</li>
               <li>human approves</li>
-              <li>send under daily caps</li>
-              <li>follow-ups on schedule</li>
-              <li class="end">triage replies + weekly report</li>
+              <li>send + follow up</li>
+              <li class="end">triage replies</li>
             </ol>
           </aside>
         </div>
