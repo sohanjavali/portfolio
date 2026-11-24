@@ -12,15 +12,17 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
         - a fixed layer behind the rest of the page, heavily muted: a barely
           visible grid, a few slow dim lines, no labels or glow
    ------------------------------------------------------------------ */
-// Little "task finished" labels, pulled from things I've actually built
-const TASKS = [
-  'parse docket', 'fetch filings', 'ocr scan', 'extract fields', 'cite source', 'check owner', 'retrain bert',
-  'research topic', 'write script', 'voice line', 'stitch mp3', 'save episode',
-  'sample weekday', 'order frame', 'read lot', 'validate schema', 'pivot matrix',
-  'find leads', 'score lead', 'draft email', 'approve draft', 'send batch', 'triage reply',
-  'capture note', 'route inbox', 'lint note', 'commit', 'push backup', 'weekly audit',
-  'run tests', 'review diff', 'merge', 'deploy',
-];
+// Every agent belongs to one project: it moves in that project's color (the
+// same hue as its row below) and only finishes that project's tasks.
+const PROJECTS = {
+  lareg:   ['parse docket', 'fetch filings', 'ocr scan', 'extract fields', 'cite source', 'check owner', 'retrain bert'],
+  brain:   ['capture note', 'route inbox', 'lint note', 'commit', 'push backup', 'weekly audit'],
+  autopod: ['research topic', 'write script', 'voice line', 'stitch mp3', 'save episode'],
+  parking: ['sample weekday', 'order frame', 'read lot', 'validate schema', 'pivot matrix'],
+  kit:     ['find leads', 'score lead', 'draft email', 'approve draft', 'send batch', 'triage reply'],
+};
+const KEYS = Object.keys(PROJECTS);
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const GAP = 32;                         // px between grid lines
 const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 
@@ -28,7 +30,10 @@ function field(canvas, { strength = 1, gridAlpha = 0.14, labels = true, perPx = 
   const ctx = canvas.getContext('2d');
   let w = 0, h = 0, cols = 0, rows = 0, grid = null, colors = {};
   let agents = [], ripples = [], last = 0, running = false, active = true;
-  const readColors = () => { colors = { line: css('--dim'), accent: css('--accent'), ok: css('--ok') }; };
+  const readColors = () => {
+    colors = { line: css('--dim') };
+    for (const k of KEYS) colors[k] = css('--c-' + k);
+  };
 
   // Draw the static grid once onto an offscreen canvas, then copy it each frame (much cheaper).
   function resize() {
@@ -58,6 +63,7 @@ function field(canvas, { strength = 1, gridAlpha = 0.14, labels = true, perPx = 
       x: x ?? Math.floor(cols * (1 - spread + Math.random() * spread)),   // hero: mostly right of center, away from the text
       y: y ?? Math.floor(Math.random() * rows),
       dx, dy, t: 0,
+      p: pick(KEYS),                                                     // which project this agent works for
       speed: (2.2 + Math.random() * 2.2) * speed,                        // grid steps per second
       trail: [],
     };
@@ -71,9 +77,9 @@ function field(canvas, { strength = 1, gridAlpha = 0.14, labels = true, perPx = 
       [a.dx, a.dy] = Math.random() < 0.5 ? [a.dy, -a.dx] : [-a.dy, a.dx];
     }
     if (labels && Math.random() < 0.05) {                        // "finished a task"
-      ripples.push({ x: a.x, y: a.y, age: 0, label: TASKS[Math.floor(Math.random() * TASKS.length)] });
+      ripples.push({ x: a.x, y: a.y, age: 0, p: a.p, label: pick(PROJECTS[a.p]) });
     }
-    if (a.x < -1 || a.y < -1 || a.x > cols + 1 || a.y > rows + 1) Object.assign(a, spawn(), { trail: [] });
+    if (a.x < -1 || a.y < -1 || a.x > cols + 1 || a.y > rows + 1) Object.assign(a, spawn(), { trail: [] });   // respawns with a new project too
   }
 
   function update(dt) {
@@ -94,16 +100,17 @@ function field(canvas, { strength = 1, gridAlpha = 0.14, labels = true, perPx = 
     for (const a of agents) {
       const hx = (a.x + a.dx * a.t) * GAP, hy = (a.y + a.dy * a.t) * GAP;
       const pts = [...a.trail.map(([x, y]) => [x * GAP, y * GAP]), [a.x * GAP, a.y * GAP], [hx, hy]];
-      ctx.strokeStyle = colors.accent; ctx.lineWidth = 1.5;
+      const c = colors[a.p];
+      ctx.strokeStyle = c; ctx.lineWidth = 1.5;
       for (let i = 1; i < pts.length; i++) {                     // older segments fade out
         ctx.globalAlpha = (i / pts.length) * 0.6 * strength;
         ctx.beginPath(); ctx.moveTo(...pts[i - 1]); ctx.lineTo(...pts[i]); ctx.stroke();
       }
       if (labels) {                                              // soft glow (hero only), then the head
-        ctx.globalAlpha = 0.18 * strength; ctx.fillStyle = colors.accent;
+        ctx.globalAlpha = 0.18 * strength; ctx.fillStyle = c;
         ctx.beginPath(); ctx.arc(hx, hy, 7, 0, Math.PI * 2); ctx.fill();
       }
-      ctx.fillStyle = colors.accent;
+      ctx.fillStyle = c;
       ctx.globalAlpha = strength;
       ctx.fillRect(hx - 2.5, hy - 2.5, 5, 5);
     }
@@ -111,9 +118,9 @@ function field(canvas, { strength = 1, gridAlpha = 0.14, labels = true, perPx = 
     ctx.font = '11px "JetBrains Mono", ui-monospace, monospace';
     for (const r of ripples) {
       const k = r.age / 1.6, x = r.x * GAP, y = r.y * GAP;
-      ctx.globalAlpha = (1 - k) * 0.8 * strength; ctx.strokeStyle = colors.ok; ctx.lineWidth = 1;
+      ctx.globalAlpha = (1 - k) * 0.8 * strength; ctx.strokeStyle = colors[r.p]; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.arc(x, y, 4 + k * 26, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = colors.ok;
+      ctx.fillStyle = colors[r.p];
       ctx.fillText(r.label, x + 10, y - 10 - k * 8);
     }
     ctx.globalAlpha = 1;
@@ -142,9 +149,10 @@ function field(canvas, { strength = 1, gridAlpha = 0.14, labels = true, perPx = 
     // Drop in a new agent at the nearest grid point.
     spawnAt(px, py) {
       const x = Math.round(px / GAP), y = Math.round(py / GAP);
-      agents.push(spawn(x, y));
+      const a = spawn(x, y);
+      agents.push(a);
       if (agents.length > 24) agents.shift();
-      ripples.push({ x, y, age: 0, label: 'spawned' });
+      ripples.push({ x, y, age: 0, p: a.p, label: 'spawned' });
       if (!running) draw();
     },
   };
