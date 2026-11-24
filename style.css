@@ -83,11 +83,7 @@ i { font-style: normal; color: var(--dim); }
 .nav nav a:hover { color: var(--text); }
 .mark { justify-self: start; }
 .status { justify-self: end; display: flex; align-items: center; gap: 0.55rem; font-size: 0.85rem; color: var(--muted); }
-.dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ok); animation: pulse 2s infinite; }
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 60%, transparent); }
-  70%, 100% { box-shadow: 0 0 0 8px transparent; }
-}
+.dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ok); }
 
 /* =========================================================
    Hero: giant name over the agent grid
