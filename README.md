@@ -29,3 +29,13 @@ Numbers only when they're real (from the resume or measured). No m-dashes. Every
 ## Link preview
 
 `og.png` is the image that shows when the link is pasted into iMessage, Slack, LinkedIn, or Gmail. Its source is `og-card.html`: open it in a browser at 1200x630, screenshot it, and save over `og.png`. The text in the preview comes from the `og:` tags at the top of `index.html`.
+
+## Resume
+
+The Resume links point to `sohan-javali-resume.pdf`, a straight copy of the real resume. After updating it, copy it over and push:
+
+```bash
+cp ~/Desktop/"Sohan Javali Resume.pdf" sohan-javali-resume.pdf
+```
+
+`vercel.json` tells search engines not to index or cache the PDF.
