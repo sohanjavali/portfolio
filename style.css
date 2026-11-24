@@ -55,7 +55,7 @@ i { font-style: normal; color: var(--dim); }
    ========================================================= */
 .nav {
   position: sticky; top: 0; z-index: 10;
-  display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1.5rem;
   padding: 1rem var(--gutter);
   background: color-mix(in srgb, var(--bg) 75%, transparent);
   backdrop-filter: blur(12px);
@@ -70,7 +70,8 @@ i { font-style: normal; color: var(--dim); }
 .nav nav { display: flex; gap: 1.75rem; font-size: 0.92rem; }
 .nav nav a { text-decoration: none; color: var(--muted); transition: color 0.15s; }
 .nav nav a:hover { color: var(--text); }
-.status { display: flex; align-items: center; gap: 0.55rem; font-size: 0.85rem; color: var(--muted); }
+.mark { justify-self: start; }
+.status { justify-self: end; display: flex; align-items: center; gap: 0.55rem; font-size: 0.85rem; color: var(--muted); }
 .dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ok); animation: pulse 2s infinite; }
 @keyframes pulse {
   0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 60%, transparent); }
@@ -284,6 +285,7 @@ summary:hover .go { background: var(--accent); color: #fff; }
 .about { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem 5rem; margin-top: 2.5rem; }
 .about-big { font-family: var(--display); font-weight: 500; font-size: clamp(1.7rem, 2.8vw, 2.6rem); line-height: 1.18; letter-spacing: -0.02em; }
 .about-side > p { color: var(--muted); }
+.about-side > p + p { margin-top: 1rem; }
 .facts { margin-top: 2rem; font-size: 0.82rem; border-top: 1px solid var(--line); }
 .facts div { display: grid; grid-template-columns: 7.5rem 1fr; gap: 1rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
 .facts dt { color: var(--dim); }
@@ -333,6 +335,7 @@ summary:hover .go { background: var(--accent); color: #fff; }
    ========================================================= */
 @media (max-width: 64rem) {
   .nav nav { display: none; }
+  .nav { grid-template-columns: 1fr auto; }
   .panel { grid-template-columns: 1fr; padding-left: 0; }
   .diagram { position: static; }
   .kits { grid-template-columns: repeat(2, 1fr); }
